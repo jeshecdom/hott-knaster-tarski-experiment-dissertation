@@ -3,7 +3,7 @@
 Author: Jesús Héctor Domínguez Sánchez
 June 2016
 
-IMPORTANT: READ FILE "README.md" FIRST!!!!!!!!!!
+IMPORTANT: READ FILE "README.md" FIRST!!!!
 
 This script is intended to be read side by side with the dissertation.
 This is why the author decided to place all results in one big script
@@ -525,6 +525,18 @@ id_preser   : forall A: Type@{i}, map A A idmap == idmap ;
 comp_preser : forall (A B C: Type@{i}) (g: A -> B) (h: B -> C),
                 map A C (h o g) == (map B C h) o (map A B g)
 }.
+
+(* 
+IMPORTANT: Notice we are using universe level annotations in the definition of
+FunctorStr. If we remove them, Coq will wrongly collapse universe levels when
+starting some proofs later in the development, resulting in a 
+"universe inconsistency error" that is not really there. The author does not know if 
+this is a bug on the version of Coq used by the HoTT library. But adding those 
+annotations in FunctorStr prevents this odd behaviour in Coq. Nevertheless, those 
+annotations do not change the meaning of FunctorStr since that is exactly how FunctorStr 
+was defined in the report (i.e. all types on the universal quantifiers live at the same 
+universe level).
+*)
 
 (* Make some arguments implicit. *)
 Arguments BuildFunctorStr {_} _ _ _.
