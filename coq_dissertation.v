@@ -1818,7 +1818,7 @@ Qed.
 
 (*----- Subsection 4.2.2 --------*)
 
-(* Property part of Definition 4.2.10(i) 
+(* Property part of Definition 4.2.11(i) 
   
    Notice again the use of "let enforce_lt := Type@{l} : Type@{k} in" again, to 
    impose the level restriction. *) 
@@ -1835,7 +1835,7 @@ Arguments llinit_alg_pr _ {_} {_} {_} _ {_}.
 (* Make automatically available the proof that a llInSAlg is a set algebra *)
 Global Existing Instance llinit_is_salg.
 
-(*  Definition 4.2.10(i) *)
+(*  Definition 4.2.11(i) *)
 Record LLInSAlg (H: Type -> Type) {FH: FunctorStr H} := BuildLLInSAlg {
  llinit_obj             : Type ;
  llinit_obj_is_initalg  : IsLLInSAlg llinit_obj H
@@ -1850,7 +1850,7 @@ Global Existing Instance llinit_obj_is_initalg.
 (* Treat a LLInSAlg as a type, when necessary *)
 Coercion llinit_obj : LLInSAlg >-> Sortclass.
 
-(* Property part of Definition 4.2.10(ii) 
+(* Property part of Definition 4.2.11(ii) 
  
    Notice again that the universe levels of W and B must be the same.  *) 
 Class IsInSAlg (W: Type@{k}) (H: Type -> Type) {FH: FunctorStr H} := BuildIsInSAlg { 
@@ -1865,7 +1865,7 @@ Arguments init_alg_pr _ {_} {_} {_} _ {_}.
 (* Make automatically available the proof that an initial algebra is a set algebra *)
 Global Existing Instance init_is_salg.
 
-(* Definition 4.2.10(ii)  *) 
+(* Definition 4.2.11(ii)  *) 
 Record InSAlg (H: Type -> Type) {FH: FunctorStr H} := BuildInSAlg {
  init_obj             : Type ;
  init_obj_is_initalg  : IsInSAlg init_obj H
@@ -1880,7 +1880,7 @@ Global Existing Instance init_obj_is_initalg.
 (* Treat a InSAlg as a type, when necessary *)
 Coercion init_obj : InSAlg >-> Sortclass.
 
-(* Lemma 4.2.12 *)
+(* Lemma 4.2.13 *)
 Lemma lambek_init_alg {H: Type -> Type} {FH: FunctorStr H} {Hsets: PreservesSets H} 
  (A: Type) {IA: IsInSAlg A H} : H A <~> A.
 Proof.   (* H A becomes a SAlg with the "map H (In A) : H (H A) -> H A" function. 
@@ -1923,12 +1923,12 @@ rewrite id_preser.
 reflexivity.
 Qed.
 
-(* Definition 4.2.13 *)
+(* Definition 4.2.14 *)
 Definition PIn {H: Type -> Type} {FH: FunctorStr H} (A: Type) {AA: IsSAlg A H} 
 (P: A -> Type) {prop: forall x: A, IsHProp (P x)} : H {w: A & P w} -> A :=
  (In A) o (map H pr1).
 
-(* Lemma 4.2.14 
+(* Lemma 4.2.15 
 
    "functor_sigma" is the Sigma_map function of Lemma 2.5.28 *)
 Lemma pin_lemma1 {fext: Funext} {H: Type -> Type} {FH: FunctorStr H} (A B: Type) 
@@ -1958,7 +1958,7 @@ refine (ap (In B) _).
 exact (D2 y).
 Qed.
 
-(* Lemma 4.2.15 *)
+(* Lemma 4.2.16 *)
 Lemma pin_lemma2 {fext: Funext} {H: Type -> Type} {FH: FunctorStr H} (A: Type) 
 {AA: IsSAlg A H} : forall y: H {_: A & Unit},
                       idmap (PIn A (fun _: A => Unit) y) = In A (map H pr1 y).
@@ -1967,7 +1967,7 @@ intro y. (* By definition *)
 reflexivity.
 Qed.
 
-(* Definition 4.2.16 
+(* Definition 4.2.17 
    
    Instead of using "A -> Prop" as in the report, we will use "Subtype A" because at
    some point we will use the Powertype lattice, which was defined using "Subtype". *)
@@ -1976,7 +1976,7 @@ Definition CanStep {H: Type -> Type} {FH: FunctorStr H} (A: Type) {AA: IsSAlg A 
                                      (exists y: H {z: A & T z}, w = PIn A T y)
                                   ).
 
-(* Lemma 4.2.17 
+(* Lemma 4.2.18 
 
    Notice how Coq automatically finds a proof that "Subtype A" has a poset
    structure, since we marked the "Powertype" lattice example as a Global Instance. *)
@@ -1992,20 +1992,20 @@ set (t := map H (functor_sigma idmap p1) y).
 exists t. 
        (* Lemma 2.9.7 *)
 pose proof (id_alg_mor A) as D1. 
-       (* Lemma 4.2.14 *)
+       (* Lemma 4.2.15 *)
 pose proof (pin_lemma1 A A idmap p1 D1) as D2.
 rewrite h1.
 exact (D2 y).
 Qed.
 
-(* Definition 4.2.18
+(* Definition 4.2.19
 
    In the report, this is written as A_I. In this script it will be written as
    "Init A" *)
 Definition Init {univ: Univalence} {pres: PropResize} {H: Type -> Type} {FH: FunctorStr H} 
 (A: Type) {AA: IsSAlg A H} := {w: A & Lfp (CanStep A) w}.
 
-(* Lemma 4.2.20 *)
+(* Lemma 4.2.21 *)
 Global Instance Init_is_salg {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} (A: Type) {AA: IsSAlg A H} : IsSAlg (Init A) H.
 Proof.  (* Coq automatically proves that (Init A) is a set *)
@@ -2022,14 +2022,14 @@ set (t := map H (functor_sigma idmap p2) y).
 exists t.
        (* Lemma 2.9.7 *)
 pose proof (id_alg_mor A) as D1. 
-       (* Lemma 4.2.14 *)
+       (* Lemma 4.2.15 *)
 pose proof (pin_lemma1 A A idmap p2 D1) as D2.
 unfold a.
 rewrite D2. (* By definition of t. *)
 reflexivity.
 Defined.
 
-(* Lemma 4.2.21 *)
+(* Lemma 4.2.22 *)
 Lemma proj1_alg_morph {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} (A: Type) {AA: IsSAlg A H} : IsAlgMor (pr1: (Init A) -> A).
 Proof.
@@ -2037,7 +2037,7 @@ intro w. (* By definition of In (Init A) *)
 reflexivity.
 Qed.
 
-(* Lemma 4.2.22 *)
+(* Lemma 4.2.23 *)
 Lemma Init_ind {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} (A: Type) {AA: IsSAlg A H} (P: Init A -> Type) 
 {Pprop: forall x: Init A, IsHProp (P x)} : 
@@ -2064,10 +2064,10 @@ assert (Lfp (CanStep A) <= B) as k. (* Corollary 3.4.1 *)
  change (forall z: Init A, P z -> B z.1) in fib. 
                 (* Lemma 2.9.3 *)
  pose proof (funct_preserve_equiv H (functor_sigma pr1 fib)) as equiv'.
- set (s := map H (functor_sigma pr1 fib)). (* Lemma 4.2.21 *)
- pose proof (proj1_alg_morph A) as D1. (* Lemma 4.2.14 *) 
+ set (s := map H (functor_sigma pr1 fib)). (* Lemma 4.2.22 *)
+ pose proof (proj1_alg_morph A) as D1. (* Lemma 4.2.15 *) 
  pose proof (pin_lemma1 (Init A) A pr1 fib D1) as D2.
-                (* Equation 4.8 *)
+                (* Equation 4.9 *)
  
  assert (w = (PIn (Init A) P (s^-1 y)).1) as e1.
   rewrite D2. (* s is an equivalence *)
@@ -2092,10 +2092,10 @@ rewrite eta_sigma in h3.
 exact h3.
 Qed.
 
-(* Theorem 4.2.23(i) *)
+(* Theorem 4.2.24(i) *)
 Theorem Init_is_ll_init_salg {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} (A: Type) {AA: IsLLWinSAlg A H} : IsLLInSAlg (Init A) H.
-Proof. (* By Lemma 4.2.20 we know "Init A" is a SAlg *)
+Proof. (* By Lemma 4.2.21 we know "Init A" is a SAlg *)
 refine (BuildIsLLInSAlg (Init_is_salg A) _).
 intros restriction B BAlg. 
                 (* Existence *)
@@ -2106,7 +2106,7 @@ pose proof (llwinit_alg_pr A B) as mor_to_B.
                 (* We have to explicitly set the type of the projection function,
                    otherwise Coq will complain when defining function h *)
 set (pr1: Init A -> A) as proj.
-set (h := mor_to_B o proj). (* Lemma 4.2.21 *)
+set (h := mor_to_B o proj). (* Lemma 4.2.22 *)
 pose proof (proj1_alg_morph A) as pr1_mor.
                     (* Lemma 2.9.6 *)
 pose proof (alg_mor_compose (BuildAlgMor proj pr1_mor) mor_to_B) as w1.
@@ -2129,9 +2129,9 @@ induction y as [g w2].
   unfold IsAlgMor.
   exact _.
   simpl. (* Apply function extensionality *) 
-  apply path_arrow. (* Lemma 4.2.22 *)
+  apply path_arrow. (* Lemma 4.2.23 *)
   refine (Init_ind _ _ _).
-         (* Here, term "hyp" is Equation (4.12) *)
+         (* Here, term "hyp" is Equation (4.13) *)
   intros T Tprop hyp.
   set (fib := fun (w: Init A) (y: T w) => tt).
   set (ts := (functor_sigma idmap fib) :
@@ -2139,11 +2139,11 @@ induction y as [g w2].
             (* Start Claim 1 *)
   assert ((map H h) o (map H pr1) o (map H ts) ==
          (map H g) o (map H pr1) o (map H ts)) as claim1.
-                  (* This is Diagram (4.13) *)
+                  (* This is Diagram (4.15) *)
     assert (h o pr1 o ts == g o pr1 o ts) as CD1.
       refine (sig_ind _ _ _ _).
       intros a b.
-      simpl. (* By Equation (4.12) *)
+      simpl. (* By Equation (4.13) *)
       exact (hyp (a;b)).
     intro w. (* Functoriality of H *)
     rewrite <- comp_preser.
@@ -2155,14 +2155,14 @@ induction y as [g w2].
           (* Lemma 2.9.7 *)
   pose proof (id_alg_mor (Init A)) as id_mor.
         (* We have the left square in Diagram 
-              (4.14).
+              (4.16).
            Marked with a big black star.
-           We apply Lemma 4.2.14 *)
+           We apply Lemma 4.2.15 *)
   pose proof (pin_lemma1 (Init A) (Init A) idmap fib id_mor) as BStar.
         (* We have the middle square in Diagram 
-              (4.14).
+              (4.16).
            Marked with a big black diamond.
-           We apply Lemma 4.2.15 *)
+           We apply Lemma 4.2.16 *)
   pose proof (pin_lemma2 (Init A)) as BDiamond.
         (* The dashed arrows diagram is represeted by term w1.
            The squiggly arrows diagram is rerpresented by term w2. *) 
@@ -2178,7 +2178,7 @@ induction y as [g w2].
 exact (ap (algmor_as_sigma (Init A) B) morph_eq).
 Defined.
 
-(* Theorem 4.2.23(ii) 
+(* Theorem 4.2.24(ii) 
 
    The proof is identical as in the previous theorem, we omit the comments this time. *)
 Theorem Init_is_init_salg {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
@@ -2238,24 +2238,24 @@ induction y as [g w2].
 exact (ap (algmor_as_sigma (Init A) B) morph_eq).
 Defined.
 
-(* Corollary 4.2.24 *)
+(* Corollary 4.2.25 *)
 Corollary functor_has_llinit_salg {univ: Univalence} {pres: PropResize} (H: Type -> Type) 
 {FH: FunctorStr H} : LLInSAlg H.
 Proof. (* It has a LLWinSAlg by Lemma 4.2.9 *)
 destruct (functor_has_llwinsalg H) as [W llwinsalg_pr].
-       (* By Theorem 4.2.23(i), 
+       (* By Theorem 4.2.24(i), 
           "Init W" is a LLInSAlg *)
 exact (BuildLLInSAlg (Init W) (Init_is_ll_init_salg W)).
 Defined.
 
 (*----- Subsection 4.2.3 --------*)
 
-(* Definition 4.2.25 
+(* Definition 4.2.26 
 
    We use "Subtype Y" instead of "Y -> hProp", which are equivalent. *)
 Definition Pow (Y: Type) := Subtype Y.
 
-(* Lemma 4.2.26 *)
+(* Lemma 4.2.27 *)
 Global Instance Pow_is_functor {univ: Univalence} {pres: PropResize} : FunctorStr Pow. 
 Proof.
 set (mapPow A B f := fun P: Subtype A => 
@@ -2339,7 +2339,7 @@ refine (equiv_propresize _ _).
 exact (tr (t ; (s , (ap h u) @ r))).
 Defined.
 
-(* That Pow preserves sets is part of Lemma 4.2.26
+(* That Pow preserves sets is part of Lemma 4.2.27
 
    Also, that Pow preserves levels will be automatically managed by Coq. *)
 Global Instance Pow_preservesSets {univ: Univalence} {pres: PropResize} : 
@@ -2349,25 +2349,25 @@ intros X Xset. (* Coq automatically proves that "Subtype X" is a set. *)
 exact _.
 Qed.
 
-(* Theorem 4.2.27 *)
+(* Theorem 4.2.28 *)
 Theorem pow_without_init_salg {univ: Univalence} {pres: PropResize} : ~(InSAlg Pow).
 Proof.
-intro A. (* Lemma 4.2.12 *)
+intro A. (* Lemma 4.2.13 *)
 pose proof (lambek_init_alg A) as fixp.
          (* Lemma 2.8.20 *)
 exact (cantor A fixp).
 Qed.
 
-(* Corollary 4.2.28 *)
+(* Corollary 4.2.29 *)
 Corollary pow_without_winit_salg {univ: Univalence} {pres: PropResize} : ~(WinSAlg Pow).
 Proof.
-intro A. (* Theorem 4.2.23(ii) *)
+intro A. (* Theorem 4.2.24(ii) *)
 pose proof (Init_is_init_salg A) as Ainit.
-         (*  Theorem 4.2.27 *)
+         (*  Theorem 4.2.28 *)
 exact (pow_without_init_salg (BuildInSAlg (Init A) Ainit)).
 Qed.
 
-(* Corollary 4.2.29 *)
+(* Corollary 4.2.30 *)
 Corollary llinit_salg_not_fixpoint {univ: Univalence} {pres: PropResize} (A: Type) 
 {Allinit: IsLLInSAlg A Pow} : ~(Pow A <~> A).
 Proof. (* Lemma 2.8.20 *)
@@ -2382,10 +2382,10 @@ Section Example_nat.
 Context {univ: Univalence}
         {propres: PropResize}.
 
-(* Definition 4.2.30 *)
+(* Definition 4.2.31 *)
 Definition NatF (Y: Type) := Unit + Y.
 
-(* Lemma 4.2.31 *)
+(* Lemma 4.2.32 *)
 Local Instance NatF_is_functor : FunctorStr NatF.
 Proof.
 transparent assert (mapNatF: (forall A B: Type, (A -> B) -> NatF A -> NatF B)).
@@ -2412,7 +2412,7 @@ reflexivity.
 Defined.
 
 (* This is the set preservation part of 
-   Lemma 4.2.31
+   Lemma 4.2.32
 
    We do not need to prove that NatF preserves levels, as it is handled 
    automatically by Coq. *)
@@ -2422,9 +2422,9 @@ intros X setX. (* Coq automatically proves it *)
 exact _.
 Defined.
 
-(* Definition 4.2.32
+(* Definition 4.2.33
 
-   We obtain it from Corollary 4.2.24 *)
+   We obtain it from Corollary 4.2.25 *)
 Definition Nat := functor_has_llinit_salg NatF.
 
 (* We extract the In function from Nat because Coq behaves a bit dumb 
@@ -2432,13 +2432,13 @@ Definition Nat := functor_has_llinit_salg NatF.
    expressions. So, we have to help Coq a bit. *)
 Definition In_Nat := In Nat.
 
-(* Definition 4.2.33 *)
+(* Definition 4.2.34 *)
 Definition zero_Nat : Nat := In_Nat (inl tt).
 
-(* Definition 4.2.33 *)
+(* Definition 4.2.34 *)
 Definition succ_Nat (n: Nat) : Nat := In_Nat (inr n).
 
-(* Theorem 4.2.34 *)
+(* Theorem 4.2.35 *)
 Theorem Nat_ind (P: Nat -> Type) {HP: forall x: Nat, IsHProp (P x)} :
  P zero_Nat -> (forall n: Nat, P n -> P (succ_Nat n)) -> 
    forall n: Nat, P n.
@@ -2457,7 +2457,7 @@ change (P (succ_Nat r.1)).
 exact (Ind r.1 (HInd r)).
 Qed.
 
-(* Theorem 4.2.35 *)
+(* Theorem 4.2.36 *)
 Theorem Nat_iter {D: Type} {SD: IsHSet D} (base: D) (step: D -> D) : 
  Contr (exists f: Nat -> D, (f zero_Nat = base) * 
                             (forall n: Nat, f (succ_Nat n) = step (f n))
@@ -2470,7 +2470,7 @@ set (InD := fun z: Unit + D => match z with
 set (DSAlg := (BuildIsSAlg InD _): IsSAlg D NatF).
 destruct (llinit_alg_pr Nat D) as [u h_unique].
 destruct u as [h h_mor]. (* So, h: Nat -> D is a unique morphism.
-        Here, "h_mor" is Diagram (4.16) 
+        Here, "h_mor" is Diagram (4.18) 
         And "h_unique" is the proof that h is unique. *)
 
                 (* Existence *)
@@ -2496,7 +2496,7 @@ assert (IsAlgMor g) as q2. (* By induction on sum types *)
  exact (ap alg_mor_fun (h_unique (BuildAlgMor g q2))).
 Qed.
 
-(* Theorem 4.2.36 
+(* Theorem 4.2.37 
    
    Here, nat are the naturals as defined in the HoTT library. *)
 Theorem Nat_equiv_to_nat : Nat <~> nat.
@@ -2687,10 +2687,10 @@ transparent assert (HWCocone_pr: (IsCocone (H W) coalg_obj)).
 
            (* Since W is a weak colimit for the family, we have a 
               "OUTW: W -> H W" function and a proof that OUTW is a function for the
-              colimit, i.e. Equation (4.17) in the
+              colimit, i.e. Equation (4.19) in the
               report.
               
-              Equation (4.17) is read as follows
+              Equation (4.19) is read as follows
               (just rename bound variables: "i" to "(A, In A)", and "w" to "y"):
               -- "OUTW (cocone_diag W i w)" is playing the role of "Out_W (f (A,Out A) y)" 
                   in the report. 
@@ -2719,7 +2719,7 @@ set (fB := cocone_diag W (BuildCoAlg B BCoAlg)).
 
 refine (BuildCoAlgMor fB _).
 intro y.
-        (* But this is exactly Equation (4.17)
+        (* But this is exactly Equation (4.19)
            instantiated with CoAlg "(B,Out_B)" and "y: B" if we unfold and compute with
            all definitions. *)
 exact (OUTW_pr (BuildCoAlg B BCoAlg) y).
@@ -2727,7 +2727,7 @@ Qed.
 
 (*----- Subsection 4.3.2 --------*)
 
-(* Property part of Definition 4.3.7(i)   
+(* Property part of Definition 4.3.8(i)   
 
    Again, "let enforce_lt" to enforce the lower level restriction. *)
 Class IsLLFinCoAlg (W: Type@{k}) (H: Type -> Type) {FH: FunctorStr H} := 
@@ -2744,7 +2744,7 @@ Arguments llfin_coalg_pr _ {_} {_} {_} _ {_}.
 (* Make automatically available the proof that a llFinCoAlg is a coalgebra *)
 Global Existing Instance llfin_is_coalg.
 
-(* Definition 4.3.7(i)   *)
+(* Definition 4.3.8(i)   *)
 Record LLFinCoAlg (H: Type -> Type) {FH: FunctorStr H} := BuildLLFinCoAlg {
  llfin_obj              : Type ;
  llfin_obj_is_fincoalg  : IsLLFinCoAlg llfin_obj H
@@ -2759,7 +2759,7 @@ Global Existing Instance llfin_obj_is_fincoalg.
 (* Treat a LLFinCoAlg as a type, when necessary *)
 Coercion llfin_obj : LLFinCoAlg >-> Sortclass.
 
-(* Property part of Definition 4.3.7(ii)   
+(* Property part of Definition 4.3.8(ii)   
 
    Notice again that the universe levels of W and B must be the same.  *)
 Class IsFinCoAlg (W: Type@{k}) (H: Type -> Type) {FH: FunctorStr H} := BuildIsFinCoAlg { 
@@ -2774,7 +2774,7 @@ Arguments fin_coalg_pr _ {_} {_} {_} _ {_}.
 (* Make automatically available the proof that a final coalgebra is a coalgebra *)
 Global Existing Instance fin_is_coalg.
 
-(* Definition 4.3.7(ii)   *)
+(* Definition 4.3.8(ii)   *)
 Record FinCoAlg (H: Type -> Type) {FH: FunctorStr H} := BuildFinCoAlg {
  fin_obj              : Type ;
  fin_obj_is_fincoalg  : IsFinCoAlg fin_obj H
@@ -2789,7 +2789,7 @@ Global Existing Instance fin_obj_is_fincoalg.
 (* Treat a FinCoAlg as a type, when necessary *)
 Coercion fin_obj : FinCoAlg >-> Sortclass.
 
-(* Lemma 4.3.9 *)
+(* Lemma 4.3.10 *)
 Lemma lambek_fin_coalg {H: Type -> Type} {FH: FunctorStr H} (A: Type) 
 {FA: IsFinCoAlg A H} : H A <~> A.
 Proof.   (* H A becomes a CoAlg with the "map H (Out A) : H A -> H (H A)" function. *)
@@ -2830,7 +2830,7 @@ rewrite id_preser.
 reflexivity.
 Qed.
 
-(* 4.3.10 *)
+(* 4.3.11 *)
 Lemma coalg_pushout {fext: Funext} {H: Type -> Type} {FH: FunctorStr H} {A B C: Type} 
 {Acalg: IsCoAlg A H} {Bcalg: IsCoAlg B H} {Ccalg: IsCoAlg C H}
  (h: A -> B) (g: A -> C) :
@@ -2881,7 +2881,7 @@ intro a. (* By the higher constructor for pushouts *)
 exact (pushiden h g a).
 Qed.
 
-(* Lemma 4.3.11 *)
+(* Lemma 4.3.12 *)
 Lemma coalg_coequalizer {fext: Funext} {H: Type -> Type} {FH: FunctorStr H} {A B: Type} 
 {Acalg: IsCoAlg A H} {Bcalg: IsCoAlg B H} (f: A -> B) (g: A -> B) :
      (IsCoAlgMor f) -> (IsCoAlgMor g) ->
@@ -2921,14 +2921,14 @@ intro a. (* By the higher constructor for coequalizers *)
 exact (cp a).
 Qed.
 
-(* Definition 4.3.14 *)
+(* Definition 4.3.15 *)
 Definition PurelyBehEquiv {H: Type -> Type} {FH: FunctorStr H} {A: Type} 
 {Acalg: IsCoAlg A H} (w y: A) := 
   exists (T: Type) (Tcalg: IsCoAlg T H) (f g: A -> T),
     (IsCoAlgMor f) * (IsCoAlgMor g) * (IsSurjection f) * (IsSurjection g) *
     (f w = g y).
 
-(* Definition 4.3.18 
+(* Definition 4.3.19 
 
    Notice that Coq uses two different projection functions:
    - For non-dependent pairs it uses "fst" and "snd".
@@ -2941,11 +2941,11 @@ Definition IsBisimu {H: Type -> Type} {FH: FunctorStr H} {A: Type} {Acalg: IsCoA
            (Out A a = map H (fst o pr1) t) * 
            (Out A b = map H (snd o pr1) t).
 
-(* Definition 4.3.19 *)
+(* Definition 4.3.20 *)
 Definition Bisim {H: Type -> Type} {FH: FunctorStr H} {A: Type} {Acalg: IsCoAlg A H} 
 (w y: A) := exists R: A * A -> Type, (R (w,y)) * (IsBisimu R).
 
-(* Lemma 4.3.20 *)
+(* Lemma 4.3.21 *)
 Lemma bisim_implies_beh_equiv {fext: Funext} {H: Type -> Type} {FH: FunctorStr H} 
 {A: Type} {Acalg: IsCoAlg A H} (w y: A) : Bisim w y -> PurelyBehEquiv w y.
 Proof.
@@ -3033,13 +3033,13 @@ assert (IsSurjection m2) as m2sur.
   set (p1 := (inr ((a,a) ; idpath)): T).
   refine (tr (p1 ; idpath)).
 
-            (* Lemma 4.3.10 *)
+            (* Lemma 4.3.11 *)
 destruct (coalg_pushout m1 m2 m1mor m2mor m1sur m2sur) as [Q t1].
 destruct t1 as [Qcalg t2].
 destruct t2 as [pl t3].
 destruct t3 as [pr t4].
 destruct t4 as [t5 D1]. 
-                (* Term "D1" represents Diagram (4.19) *)
+                (* Term "D1" represents Diagram (4.22) *)
 destruct t5 as [t7 prsur].
 destruct t7 as [t8 plsur].
 destruct t8 as [plmor prmor].
@@ -3055,12 +3055,12 @@ split.
 exact plmor.
 exact prmor.
 exact plsur.
-exact prsur. (* By diagram (4.19) 
+exact prsur. (* By diagram (4.22) 
              and computation *)
 exact (D1 (inl ((w,y) ; h1))).
 Qed.
 
-(* Lemma 4.3.21 *)
+(* Lemma 4.3.22 *)
 Lemma behavior_equiv_one_morph {fext: Funext} {H: Type -> Type} {FH: FunctorStr H} 
 {A: Type} {Acalg: IsCoAlg A H} (w y: A) : 
                              PurelyBehEquiv w y ->  
@@ -3085,7 +3085,7 @@ destruct (coalg_coequalizer h g hmor gmor) as [Q t1].
 destruct t1 as [Qcalg t2].
 destruct t2 as [p t3].
 destruct t3 as [t4 D1]. 
-             (* Term "D1" is Diagram (4.20) *)
+             (* Term "D1" is Diagram (4.23) *)
 destruct t4 as [pmor psur].
 
 exists Q.
@@ -3101,22 +3101,22 @@ exact (coalg_mor_compose (BuildCoAlgMor h hmor) (BuildCoAlgMor p pmor)).
 exact (surjections_compose hsur psur).
 
 unfold q.
-rewrite h1. (* By Diagram (4.20) *)
+rewrite h1. (* By Diagram (4.23) *)
 exact (D1 y)^.
 Qed.
 
-(* Definition 4.3.22 *)
+(* Definition 4.3.23 *)
 Definition BehEquiv {pres: PropResize} {H: Type -> Type} {FH: FunctorStr H} {A: Type} 
 {Acalg: IsCoAlg A H} (w y: A) := GPropR (Trunc -1 (PurelyBehEquiv w y)).
 
-(* Definition 4.3.23
+(* Definition 4.3.24
  
    In the report, this is written as A_F. In this script it will be written as
    "Fin A" *)
 Definition Fin {pres: PropResize} {H: Type -> Type} {FH: FunctorStr H} (A: Type) 
 {Acalg: IsCoAlg A H} := quotient BehEquiv.
 
-(* Lemma 4.3.24 *)
+(* Lemma 4.3.25 *)
 Lemma class_of_factor {fext: Funext} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} {A: Type} {Acalg: IsCoAlg A H} {B: Type} {Bcalg: IsCoAlg B H} 
 (h: A -> B) : (IsCoAlgMor h) -> (IsSurjection h) ->
@@ -3146,7 +3146,7 @@ assert (forall w: B, IsHProp (P w)) as t1.
   intro c2.
   refine (prod_ind _ _).
   intros E3 E4. (* Here, E1, E2, E3, and E4 are equations
-                   (4.22) *)
+                   (4.25) *)
   rewrite <- E1.
   rewrite <- E3. (* By higher constructor for quotients. *)
   refine (related_classes_eq BehEquiv _).
@@ -3189,7 +3189,7 @@ refine (sig_ind _ _ _ _).
 intro c.
 refine (prod_ind _ _).
 intros E1 E2. (* Here, E1 and E2 are equations 
-                 (4.23) *)
+                 (4.26) *)
 
 assert (BehEquiv c z) as t4.
               (* Lemma 2.8.23 *)
@@ -3217,7 +3217,7 @@ exact E1.
 exact (t (h z)).
 Qed.
 
-(* Lemma 4.3.25 *)
+(* Lemma 4.3.26 *)
 Global Instance Fin_is_coalg {fext: Funext} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} {sets: PreservesSets H} (A: Type) {Acalg: IsCoAlg A H} : 
   IsCoAlg (Fin A) H.
@@ -3230,13 +3230,13 @@ intros a b. (* Lemma 2.8.24 *)
 refine (prop_resize_rec _). 
 refine (Trunc_rec _).
 intro h1.
-       (* Lemma 4.3.21 *)
+       (* Lemma 4.3.22 *)
 destruct (behavior_equiv_one_morph _ _ h1) as [Q t1].
 destruct t1 as [Qcalg t2].
 destruct t2 as [q t3].
 destruct t3 as [t4 t5].
 destruct t4 as [qmor qsur].
-       (* Lemma 4.3.24 *)
+       (* Lemma 4.3.25 *)
 destruct (class_of_factor q qmor qsur) as [g E1].
 pose proof (path_arrow _ _ E1) as E2.
 
@@ -3250,7 +3250,7 @@ rewrite <- comp_preser.
 reflexivity.
 Defined.
 
-(* Corollary 4.3.26 *)
+(* Corollary 4.3.27 *)
 Corollary class_of_coalg_morph {fext: Funext} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} {sets: PreservesSets H} (A: Type) {Acalg: IsCoAlg A H} : 
        IsCoAlgMor (class_of BehEquiv).
@@ -3259,7 +3259,7 @@ intro w. (* By computation *)
 reflexivity.
 Qed.
 
-(* Lemma 4.3.27 *)
+(* Lemma 4.3.28 *)
 Lemma Fin_coind_beh_equiv {fext: Funext} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} {sets: PreservesSets H} (A: Type) {Acalg: IsCoAlg A H} : 
  forall w y: Fin A, PurelyBehEquiv w y -> w = y.
@@ -3292,7 +3292,7 @@ exists Tcalg.
 exists (h o (class_of BehEquiv)).
 exists (g o (class_of BehEquiv)).
 
-      (* Corollary 4.3.26 *)
+      (* Corollary 4.3.27 *)
 pose proof (class_of_coalg_morph A) as clmor.
  
       (* Lemma 2.11.27 
@@ -3327,23 +3327,23 @@ exact (surjections_compose clsur gsur).
 exact p1.
 Qed.
 
-(* Corollary 4.3.28 *)
+(* Corollary 4.3.29 *)
 Corollary Fin_coind_bisim {fext: Funext} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} {sets: PreservesSets H} (A: Type) {Acalg: IsCoAlg A H} : 
  forall w y: Fin A, Bisim w y -> w = y.
 Proof.
 intros w y h1.
-    (* Lemma 4.3.20 *)
+    (* Lemma 4.3.21 *)
 pose proof (bisim_implies_beh_equiv w y h1) as p1.
-    (* Lemma 4.3.27 *)
+    (* Lemma 4.3.28 *)
 exact (Fin_coind_beh_equiv A w y p1).
 Qed.
 
-(* Theorem 4.3.29(i) *)
+(* Theorem 4.3.30(i) *)
 Theorem Fin_is_ll_fin_coalg {fext: Funext} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} {sets: PreservesSets H} (A: Type) {WA: IsLLWfinCoAlg A H} : 
  IsLLFinCoAlg (Fin A) H.
-Proof. (* By Lemma 4.3.25 we know "Fin A" is a CoAlg *)
+Proof. (* By Lemma 4.3.26 we know "Fin A" is a CoAlg *)
 refine (BuildIsLLFinCoAlg (Fin_is_coalg A) _).
 intros restriction B BCoAlg. 
 
@@ -3352,7 +3352,7 @@ intros restriction B BCoAlg.
                   Notice the accessor function "llwfin_coalg_pr" is playing the role
                   of term "m" in the report *)
 pose proof (llwfin_coalg_pr A B) as mor_from_B.
-set (h := (class_of BehEquiv) o mor_from_B). (* Lemma 4.3.26 *)
+set (h := (class_of BehEquiv) o mor_from_B). (* Lemma 4.3.27 *)
 pose proof (class_of_coalg_morph A) as cl_mor.
                     (* Lemma 2.10.3 *)
 pose proof (coalg_mor_compose mor_from_B (BuildCoAlgMor (class_of BehEquiv) cl_mor)) as w1.
@@ -3376,7 +3376,7 @@ induction y as [g w2].
   exact _.
   simpl. (* Apply function extensionality *) 
   apply path_arrow.
-  intro w. (* Corollary 4.3.28 *)
+  intro w. (* Corollary 4.3.29 *)
   refine (Fin_coind_bisim _ _ _ _).
   
   transparent assert (R: ((Fin A) * (Fin A) -> Type)).
@@ -3390,7 +3390,7 @@ induction y as [g w2].
   refine (sig_ind _ _ _ _).
   intro c.
   refine (prod_ind _ _).
-  intros p1 p2. (* Here, p1 and p2 represent Equations (4.27) 
+  intros p1 p2. (* Here, p1 and p2 represent Equations (4.30) 
                    in the report *)
   set (k r := ( (h r, g r) ; (r ; (idpath, idpath))) : {z: (Fin A) * (Fin A) & R z}).
   set (t := map H k (Out B c)).
@@ -3399,15 +3399,15 @@ induction y as [g w2].
 
   unfold t. (* Functoriality of H *)
   rewrite <- comp_preser. (* By definition of k and computation *)
-  change (Out (Fin A) m = map H h (Out B c)). (* By Diagram (4.25) *)
-  rewrite w1. (* By Equations (4.27) *)
+  change (Out (Fin A) m = map H h (Out B c)). (* By Diagram (4.28) *)
+  rewrite w1. (* By Equations (4.30) *)
   rewrite <- p1. (* By Definition of "Fin A" *)
   reflexivity.
 
   unfold t. (* Functoriality of H *)
   rewrite <- comp_preser. (* By definition of k and computation *)
-  change (Out (Fin A) n = map H g (Out B c)). (* By Diagram (4.26) *)
-  rewrite w2. (* By Equations (4.27) *)
+  change (Out (Fin A) n = map H g (Out B c)). (* By Diagram (4.29) *)
+  rewrite w2. (* By Equations (4.30) *)
   rewrite <- p2.
   reflexivity.
 
@@ -3415,7 +3415,7 @@ induction y as [g w2].
 exact (ap (coalgmor_as_sigma B (Fin A)) morph_eq).
 Defined.
 
-(* Theorem 4.3.29(ii) 
+(* Theorem 4.3.30(ii) 
 
 This is identical to the previous theorem. We omit comments. *)
 Theorem Fin_is_fin_coalg {fext: Funext} {pres: PropResize} {H: Type -> Type} 
@@ -3478,37 +3478,37 @@ induction y as [g w2].
 exact (ap (coalgmor_as_sigma B (Fin A)) morph_eq).
 Defined.
 
-(* Corollary 4.3.30 *)
+(* Corollary 4.3.31 *)
 Corollary functor_has_llfin_coalg {fext: Funext} {pres: PropResize} (H: Type -> Type) 
 {FH: FunctorStr H} {sets: PreservesSets H} : LLFinCoAlg H.
 Proof. (* It has a LLWfinCoAlg by Lemma 4.3.6 *)
 destruct (functor_has_llwfincoalg H) as [W llwfincoalg_pr].
-       (* By Theorem 4.3.29(i), 
+       (* By Theorem 4.3.30(i), 
           "Fin W" is a LLFinCoAlg *)
 exact (BuildLLFinCoAlg (Fin W) (Fin_is_ll_fin_coalg W)).
 Defined.
 
 (*----- Subsection 4.3.3 --------*)
 
-(* Theorem 4.3.31 *)
+(* Theorem 4.3.32 *)
 Theorem pow_without_fin_coalg {univ: Univalence} {pres: PropResize} : ~(FinCoAlg Pow).
 Proof.
-intro A. (* Lemma 4.3.9 *)
+intro A. (* Lemma 4.3.10 *)
 pose proof (lambek_fin_coalg A) as fixp.
          (* Lemma 2.8.20 *)
 exact (cantor A fixp).
 Qed.
 
-(* Corollary 4.3.32 *)
+(* Corollary 4.3.33 *)
 Corollary pow_without_wfin_coalg {univ: Univalence} {pres: PropResize} : ~(WfinCoAlg Pow).
 Proof.
-intro A. (* Theorem 4.3.29(ii) *)
+intro A. (* Theorem 4.3.30(ii) *)
 pose proof (Fin_is_fin_coalg A) as Afin.
-         (*  Theorem 4.3.31 *)
+         (*  Theorem 4.3.32 *)
 exact (pow_without_fin_coalg (BuildFinCoAlg (Fin A) Afin)).
 Qed.
 
-(* Corollary 4.3.33 *)
+(* Corollary 4.3.34 *)
 Corollary llfin_coalg_not_fixpoint {univ: Univalence} {pres: PropResize} (A: Type) 
 {Allfin: IsLLFinCoAlg A Pow} : ~(Pow A <~> A).
 Proof. (* Lemma 2.8.20 *)
@@ -3523,10 +3523,10 @@ Section Example_stream.
 Context {fext: Funext}
         {propres: PropResize}.
 
-(* Definition 4.3.34 *)
+(* Definition 4.3.35 *)
 Definition StreamF (A: Type) (Y: Type) := A * Y.
 
-(* Lemma 4.3.35 *)
+(* Lemma 4.3.36 *)
 Local Instance StreamF_is_functor (A: Type) : FunctorStr (StreamF A).
 Proof.
 transparent assert (
@@ -3551,7 +3551,7 @@ reflexivity.
 Defined.
 
 (* This is the set preservation part of 
-   Lemma 4.3.35
+   Lemma 4.3.36
 
    We do not need to prove that StreamF preserves levels, as it is handled 
    automatically by Coq. *)
@@ -3562,9 +3562,9 @@ intros X setX. (* Coq automatically proves it *)
 exact _.
 Defined.
 
-(* Definition 4.3.36
+(* Definition 4.3.37
 
-   We obtain it from Corollary 4.3.30 *)
+   We obtain it from Corollary 4.3.31 *)
 Definition Stream (A: Type) {setA: IsHSet A} := functor_has_llfin_coalg (StreamF A).
 
 
@@ -3573,15 +3573,15 @@ Definition Stream (A: Type) {setA: IsHSet A} := functor_has_llfin_coalg (StreamF
    expressions. So, we have to help Coq a bit. *)
 Definition Out_Stream (A: Type) {setA: IsHSet A} := Out (Stream A).
 
-(* Definition 4.3.37 *)
+(* Definition 4.3.38 *)
 Definition head_Stream {A: Type} {setA: IsHSet A} (s: Stream A) : A := 
   fst (Out_Stream A s).
 
-(* Definition 4.3.37 *)
+(* Definition 4.3.38 *)
 Definition tail_Stream {A: Type} {setA: IsHSet A} (s: Stream A) : Stream A :=
  snd (Out_Stream A s).
 
-(* Theorem 4.3.38 *)
+(* Theorem 4.3.39 *)
 Theorem Stream_coind {A: Type} {setA: IsHSet A} (w y: Stream A) : 
  (exists R: Stream A -> Stream A -> Type, 
        (R w y) * 
@@ -3594,7 +3594,7 @@ Proof.
 refine (sig_ind _ _ _ _).
 intro R.
 refine (prod_ind _ _).
-intros h1 h2. (* Corollary 4.3.28 *)
+intros h1 h2. (* Corollary 4.3.29 *)
 apply Fin_coind_bisim.
 set (S p := R (fst p) (snd p)).
 exists S.
@@ -3627,7 +3627,7 @@ rewrite eta_prod.
 reflexivity.
 Qed.
 
-(* Theorem 4.3.39 *)
+(* Theorem 4.3.40 *)
 Theorem Stream_coiter {A D: Type} {setA: IsHSet A} (h: D -> A) (t: D -> D) : 
  Contr (exists f: D -> Stream A, 
     forall w: D, (head_Stream (f w) = h w) * (tail_Stream (f w) = f (t w))
@@ -3636,7 +3636,7 @@ Proof.
 set (DCoAlg := (fun d: D => (h d, t d)): IsCoAlg D (StreamF A)).
 destruct (llfin_coalg_pr (Stream A) D) as [mor u_unique].
 destruct mor as [u u_mor]. (* So, u: D -> Stream A is a unique morphism.
-        Here, "u_mor" is Diagram (4.29) 
+        Here, "u_mor" is Diagram (4.32) 
         And "u_unique" is the proof that u is unique. *)
                 
              (* Existence *)
@@ -3657,7 +3657,7 @@ refine (BuildContr _ (u ; w1) _).
              (* Uniqueness *)
 refine (sig_ind _ _ _ _).
 intros g w2. (* Here, "w2" is acting as Equations 
-                (4.30) *)
+                (4.33) *)
              (* Lemma 2.8.14 *)
 refine (path_sigma_hprop _ _ _).
 simpl.
@@ -3665,19 +3665,19 @@ assert (IsCoAlgMor g) as q2.
   intro w. (* Corollary 2.6.25 *)
   apply path_prod. (* Simplify by computation *)
   change (h w = head_Stream (g w)).
-             (* By Equations (4.30) *)
+             (* By Equations (4.33) *)
   exact (fst (w2 w))^.
 
              (* Simplify by computation *)
   change (g (t w) = tail_Stream (g w)).
-             (* By Equations (4.30) *)
+             (* By Equations (4.33) *)
   exact (snd (w2 w))^.
          
         (* So, by uniqueness of u, we must have u = g *)
 exact (ap coalg_mor_fun (u_unique (BuildCoAlgMor g q2))).
 Qed.
 
-(* Theorem 4.3.40 
+(* Theorem 4.3.41 
    
    Here, nat are the naturals as defined in HoTT library. *)
 Theorem Stream_equiv_to_nat_indexed_functions (A: Type) {setA: IsHSet A} : 
@@ -3729,7 +3729,7 @@ refine (sig_ind _ _ _ _).
 intro w.
 refine (prod_ind _ _).
 intros q1 q2. (* Here, "q1" and "q2" are Equations 
-                 (4.34) *)
+                 (4.37) *)
 split.
 
 rewrite q1. (* By definition of f2 *)
