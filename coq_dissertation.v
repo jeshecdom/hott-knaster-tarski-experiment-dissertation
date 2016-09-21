@@ -5,17 +5,17 @@ June 2016
 
 IMPORTANT: READ FILE "README.md" FIRST!!!!
 
-This script is intended to be read side by side with the dissertation.
+This script is intended to be read side by side with the thesis.
 This is why the author decided to place all results in one big script
 file instead of splitting the script into modules. Of course, there are
-small differences on how the results on the dissertation are implemented
+small differences on how the results on the thesis are implemented
 on this script, but the author hopes those differences are sufficiently
-minimal so that a reader can still follow the script and the 
-dissertation without trouble.
+minimal so that a reader can still follow the script and the thesis 
+without trouble.
 
 Modularity, reusability, or proof automation is not a concern here, as
 this script is intended to be read by a person that is following the 
-dissertation. This is the reason of why the author tried to use one
+thesis. This is the reason of why the author tried to use one
 tactic per line inside proofs (and no automatic tactics, unless it is 
 obvious by computation) so that each step in the proof can clearly be seen 
 during execution of the script.
@@ -83,8 +83,8 @@ exists (x: A) (y: B), P x y
 
 ------------------------------------------------------------------------------
 
-Type                               Universe at some level. It is left to Coq
-                                   to assign the level.
+Type                               Universe at some level. Coq assigns 
+                                   automatically the universe level.
 
 ------------------------------------------------------------------------------
 
@@ -123,14 +123,14 @@ IsEquiv e                          e is an equivalence.
 
                                    The library uses the "half-adjoint" 
                                    definition of equivalence instead of the 
-                                   "bi-invertible" map the the author used in 
-                                   the dissertation. These two definitions are 
+                                   "bi-invertible" map the author used in 
+                                   the thesis. These two definitions are 
                                    equivalent (see Chapter 4 in the HoTT book)
 
 ------------------------------------------------------------------------------
 
 A <~> B                            Equivalent types.
-                                   (See Definition 2.6.16)
+                                   (See Definition 2.6.17)
 
                                    This is an abbreviation for type: 
                                    {f: A -> B & IsEquiv f}, although the
@@ -161,7 +161,7 @@ tt                                 The unique term in Unit (the "star" term)
 (a, b)                             Non-dependent pair
 
                                    Coq treats differently sigma types and
-                                   product types, while in the dissertation
+                                   product types, while in the thesis
                                    product types are a special case of a sigma.
                                    This is just a technicality, since one can
                                    easily prove that types
@@ -217,17 +217,17 @@ Alternative syntax:
 ------------------------------------------------------------------------------
 
 p^                                 Symmetry operator
-                                   (See Lemma 2.5.60)
+                                   (See Lemma 2.5.59)
 
 ------------------------------------------------------------------------------
 
 p @ q                              Transitivity operator
-                                   (See Lemma 2.5.61)
+                                   (See Lemma 2.5.60)
 
 ------------------------------------------------------------------------------
 
 transport P q a                    Transport operator
-                                   (See Lemma 2.5.62)
+                                   (See Lemma 2.5.61)
 Alternative syntax when
 P is automatically inferred:
 
@@ -236,19 +236,19 @@ q # a
 ------------------------------------------------------------------------------
 
 ap f p                             Application operator
-                                   (Lemma 2.5.63)
+                                   (Lemma 2.5.62)
 
 ------------------------------------------------------------------------------
 
 apD f p                            Dependent application operator
-                                   (Lemma 2.5.64)
+                                   (Lemma 2.5.63)
 
 ------------------------------------------------------------------------------
 
 e^-1                               Inverse of equivalence e
                                    (See Definition 2.6.12)
 
-                                   It can be applied when type IsEquiv e is
+                                   It can be applied when type "IsEquiv e" is
                                    inhabited.
 
                                    The notation can also be used on terms 
@@ -257,7 +257,7 @@ e^-1                               Inverse of equivalence e
 ------------------------------------------------------------------------------
 
 f o g                              Function composition
-                                   (See Definition 2.5.12)
+                                   (See Definition 2.5.13)
 
 ------------------------------------------------------------------------------
 
@@ -279,36 +279,71 @@ Alternative syntax:
 
 n.+1
 
+------------------------------------------------------------------------------
+
+hProp                              Universe of propositions
+                                   (See Definition 2.8.4)
+
+Syntax with universe level
+variable:
+
+hProp@{i}
+
+------------------------------------------------------------------------------
+
+IsHProp A                          A is a proposition
+                                   (See Definition 2.8.4)
+
+------------------------------------------------------------------------------
+
+hSet                               Universe of sets
+                                   (See Definition 2.8.9)
+
+Syntax with universe level
+variable:
+
+hSet@{i}
+
+------------------------------------------------------------------------------
+
+IsHSet A                           A is a set
+                                   (See Definition 2.8.9)
+
+------------------------------------------------------------------------------
+
+Contr A                            A is contractible
+                                   (See Definition 2.8.1)
+
 *)
 
 
 (*------ Section 2.6 ------- *)
 
-(* Lemma 2.6.22
+(* Lemma 2.6.23
 
    Here, "functor_sigma" is the Sigma_map function of 
    Lemma 2.5.28  *)
 Lemma sigmas_assoc {A: Type} (P: A -> Type) (Q: {w: A & P w} -> Type) :
  let T := fun w: A => {y: P w & Q (w ; y)} in
-    exists (fib: forall y: {w: A & P w}, Q y -> T y.1),
-         IsEquiv (functor_sigma pr1 fib).
+    exists (m: forall y: {w: A & P w}, Q y -> T y.1),
+         IsEquiv (functor_sigma pr1 m).
 Proof.
 intro T.
-transparent assert (fib: (forall y: {w: A & P w}, Q y -> T y.1)).
+transparent assert (m: (forall y: {w: A & P w}, Q y -> T y.1)).
           (* Lemma 2.5.24 *)
  refine (sig_ind _ _ _ _).
  intros w y q.
  exact (y ; q).
 
-exists fib.
+exists m.
 
 transparent assert (inv: ({w: A & T w} -> {q: {w: A & P w} & Q q})).
  refine (sig_ind _ _ _ _).
  intros a b.
  exact ((a ; b.1) ; b.2). 
 
-         (* Lemma 2.6.15 *)
-refine (isequiv_adjointify (functor_sigma pr1 fib) inv _ _).
+         (* Lemma 2.6.16 *)
+refine (isequiv_adjointify (functor_sigma pr1 m) inv _ _).
 
           (* Apply sigma induction twice *)
  refine (sig_ind _ _ _ _).
@@ -339,7 +374,7 @@ later).
 *)
 Lemma subtype_repr_equiv (S: Type) : 
   (S -> hProp) <~> {f: S -> Type & forall w: S, IsHProp (f w)}.
-Proof. (* By Lemma 2.6.17 we need to provide 
+Proof. (* By Lemma 2.6.18 we need to provide 
           two functions that are inverses of each other. *)
 transparent assert (f1: ((S -> hProp) -> {f : S -> Type & forall w : S, IsHProp (f w)})).
  intro f. (* Here, "trunctype_type" and "istrunc_trunctype_type" are the accessor 
@@ -366,9 +401,9 @@ Qed.
 
 (* 
 On this script I prefer the sigma representation for subtypes, because sigmas can be 
-encoded as record types in Coq. And record types are more "reader-friendly" in the sense 
+encoded as record types in Coq. And record types are more "user-friendly" in the sense 
 that records allow access to the components of a sigma by using accesor functions 
-instead of nested projection functions as when using a sigma directly.
+instead of nested projection functions.
 
 Also, records allow automatic coercion, so that when we have a subtype P: Subtype S
 we can treat P automatically as a function P: S -> Type when necessary.
@@ -402,8 +437,8 @@ Defined.
 Lemma path_subtype {fext: Funext} {S: Type} {A B: Subtype S} : 
  subtype_func A = subtype_func B -> A = B.
 Proof.
-intro p. (* We prove that "A" and "B" seeing as elements on the Sigma are equal, since
-            the Sigma and Record forms are the same. 
+intro p. (* We prove that "A" and "B" seen as elements of the Sigma are equal, since
+            the Sigma and Record types are the same. 
 
             "@paths A a b" is just another way of writing "a = b" but the "@paths"
             term allows specifying type A when Coq cannot deduce it from "a" and "b"
@@ -414,7 +449,7 @@ assert ( @paths {f: S -> Type & forall x: S, IsHProp (f x)}
        ) as p1. (* The second components on both pairs are terms on mere propositions. 
                    So, apply Lemma 2.8.14. *)
  refine (path_sigma_hprop _ _ _).
- exact p. (* Apply the equivalence of the record form and the Sigma form. *)
+ exact p. (* Apply the equivalence of the record and the Sigma. *)
 exact (ap (subtype_as_sigma S) p1).
 Qed.
 
@@ -468,14 +503,14 @@ Monomorphic Class PropResize := {dummy_propresize_value : dummy_propresize_type}
 (* In the report, we use GPRopR^-1 to resize a proposition into a lower
 level. 
 
-But here, since GPRopR is not being treated as an equivalence, usages of GPRopR on this
+But here, since GPRopR is not treated as an equivalence, usages of GPRopR on this
 script will correspond to usages of GPRopR^-1 in the report. This is just a
 mere technical issue due to limitations on Coq. However, this way of representing 
 propositional resizing is not fundamentally different to the way it is done in HoTT.
 
 So, this axiom corresponds to Lemma 2.8.22
 
-This axiom is saying that any proposition can be sent to some type at some universe 
+This axiom is expressing that any proposition can be sent to some type at some universe 
 level that is independent of the level of the original proposition
 (due to universe polymorphism in Coq).
 
@@ -512,7 +547,7 @@ Qed.
 
 (*------ Section 2.9 ------- *)
 
-(* Definition 2.9.1 
+(* Definition 2.9.6 
 
    Again, we are using a record to represent a sigma.
 
@@ -544,21 +579,32 @@ Arguments map  _ {_} {_} {_} _ _.
 Arguments id_preser _ {_} {_} _.
 Arguments comp_preser _ {_} {_} {_} {_} _ _ _.
 
-(* Lemma 2.9.3 *)
+(* Definition 2.9.9
+
+   Since Coq is automatically managing the universe levels, we do not need to 
+   define that a functor is an endofunctor, as this will be automatically handled 
+   by Coq. *)
+Class PreservesSets (H: Type -> Type) {FH: FunctorStr H} :=
+ set_preser_cond : forall A: Type, IsHSet A -> IsHSet (H A).
+
+(* This will inform the automatic solver that "H A" is a set. *)
+Global Existing Instance set_preser_cond.
+
+(* Lemma 2.9.10 *)
 Lemma funct_preserve_equiv {fext: Funext} (H: Type -> Type) {FH: FunctorStr H} {A B: Type}
  (e: A -> B) {equiv: IsEquiv e} : IsEquiv (map H e).
-Proof. (* Lemma 2.6.15 *)
+Proof. (* Lemma 2.6.16 *)
 refine (isequiv_adjointify (map H e) (map H e^-1) _ _).
 
 intro b.
 rewrite <- comp_preser. (* Function extensionality and
-                           Lemma 2.6.14 *)
+                           Lemma 2.6.15 *)
 rewrite (path_forall _ _ (eisretr e)).
 exact (id_preser H b).
 
 intro a.
 rewrite <- comp_preser. (* Function extensionality and
-                           Lemma 2.6.14 *)
+                           Lemma 2.6.15 *)
 rewrite (path_forall _ _ (eissect e)).
 exact (id_preser H a).
 Qed.
@@ -578,14 +624,14 @@ Alg H := {A: Type & IsAlg A H}
 We will follow this convention for almost all concepts on this script.
 *)
 
-(* Property part of Definition 2.9.4 *)
+(* Property part of Definition 2.9.11 *)
 Class IsAlg (A: Type) (H: Type -> Type) {FH: FunctorStr H} := 
  In : H A -> A.
 
 (* Make some arguments implicit *)
 Arguments In _ {_} {_} {_} _.
 
-(* Definition 2.9.4 encoded as a record. *)
+(* Definition 2.9.11 encoded as a record. *)
 Record Alg (H: Type -> Type) {FH: FunctorStr H} := BuildAlg {
  alg_obj         : Type ;
  alg_obj_is_alg  : IsAlg alg_obj H
@@ -601,7 +647,7 @@ Global Existing Instance alg_obj_is_alg.
 (* Treat an algebra as if it were a type when necessary. *)
 Coercion alg_obj : Alg >-> Sortclass.
 
-(* Property part of Definition 2.9.5 *)
+(* Property part of Definition 2.9.12 *)
 Class IsAlgMor {H: Type -> Type} {FH: FunctorStr H} {A B: Type} {AA: IsAlg A H} 
 {AB: IsAlg B H} (f: A -> B) := 
  alg_mor : f o (In A) == (In B) o (map H f).
@@ -609,7 +655,7 @@ Class IsAlgMor {H: Type -> Type} {FH: FunctorStr H} {A B: Type} {AA: IsAlg A H}
 (* Make some arguments implicit *)
 Arguments alg_mor {_} {_} {_} {_} {_} {_} _ {_} _.
 
-(* Definition 2.9.5 encoded as a record *)
+(* Definition 2.9.12 encoded as a record *)
 Record AlgMor {H: Type -> Type} {FH: FunctorStr H} (A B: Type) {AA: IsAlg A H} 
 {AB: IsAlg B H} := BuildAlgMor {
   alg_mor_fun    : A -> B ;
@@ -636,7 +682,7 @@ issig (@BuildAlgMor H FH A B AA AB)
       (@fun_is_alg_mor H FH A B AA AB).
 Defined.
 
-(* Lemma 2.9.6 *)
+(* Lemma 2.9.13 *)
 Lemma alg_mor_compose {H: Type -> Type} {FH: FunctorStr H} {A B C: Type} {AA: IsAlg A H}
 {AB: IsAlg B H} {AC: IsAlg C H} (f: AlgMor A B) (g: AlgMor B C) : IsAlgMor (g o f).
 Proof.
@@ -647,7 +693,7 @@ rewrite <- (alg_mor f).
 reflexivity.
 Qed.
 
-(* Lemma 2.9.7 *)
+(* Lemma 2.9.14 *)
 Lemma id_alg_mor {H: Type -> Type} {FH: FunctorStr H} (A: Type) {AA: IsAlg A H} : 
  IsAlgMor idmap.
 Proof.
@@ -658,14 +704,14 @@ Qed.
 
 (*------ Section 2.10 ------- *)
 
-(* Property part of Definition 2.10.1 *)
+(* Property part of Definition 2.10.4 *)
 Class IsCoAlg (A: Type) (H: Type -> Type) {FH: FunctorStr H} := 
  Out : A -> H A.
 
 (* Make some arguments implicit *)
 Arguments Out _ {_} {_} {_} _.
 
-(* Definition 2.10.1 encoded as a record. *)
+(* Definition 2.10.4 encoded as a record. *)
 Record CoAlg (H: Type -> Type) {FH: FunctorStr H} := BuildCoAlg {
  coalg_obj           : Type ;
  coalg_obj_is_coalg  : IsCoAlg coalg_obj H
@@ -681,7 +727,7 @@ Global Existing Instance coalg_obj_is_coalg.
 (* Treat a coalgebra as if it were a type when necessary. *)
 Coercion coalg_obj : CoAlg >-> Sortclass.
 
-(* Property part of Definition 2.10.2 *)
+(* Property part of Definition 2.10.5 *)
 Class IsCoAlgMor {H: Type -> Type} {FH: FunctorStr H} {A B: Type} {CA: IsCoAlg A H} 
 {CB: IsCoAlg B H} (f: A -> B) := 
  coalg_mor : (map H f) o (Out A) == (Out B) o f.
@@ -689,7 +735,7 @@ Class IsCoAlgMor {H: Type -> Type} {FH: FunctorStr H} {A B: Type} {CA: IsCoAlg A
 (* Make some arguments implicit *)
 Arguments coalg_mor {_} {_} {_} {_} {_} {_} _ {_} _.
 
-(* Definition 2.10.2 encoded as a record *)
+(* Definition 2.10.5 encoded as a record *)
 Record CoAlgMor {H: Type -> Type} {FH: FunctorStr H} (A B: Type) {CA: IsCoAlg A H} 
 {CB: IsCoAlg B H} := BuildCoAlgMor {
   coalg_mor_fun    : A -> B ;
@@ -716,7 +762,7 @@ issig (@BuildCoAlgMor H FH A B CA CB)
       (@fun_is_coalg_mor H FH A B CA CB).
 Defined.
 
-(* Lemma 2.10.3 *)
+(* Lemma 2.10.6 *)
 Lemma coalg_mor_compose {H: Type -> Type} {FH: FunctorStr H} {A B C: Type} 
 {CA: IsCoAlg A H} {CB: IsCoAlg B H} {CC: IsCoAlg C H} (f: CoAlgMor A B) 
 (g: CoAlgMor B C) : IsCoAlgMor (g o f).
@@ -728,7 +774,7 @@ rewrite (coalg_mor g).
 reflexivity.
 Qed.
 
-(* Lemma 2.10.4 *)
+(* Lemma 2.10.7 *)
 Lemma id_coalg_mor {H: Type -> Type} {FH: FunctorStr H} (A: Type) {CA: IsCoAlg A H} : 
  IsCoAlgMor idmap.
 Proof.
@@ -845,7 +891,7 @@ Definition pushright {A B C: Type} (g: A -> B) (f: A -> C) : C -> pushout g f :=
  push o inr.
 
 (* The higher constructor for pushouts is called "pp" in the library. We just reword it
-   for our pushleft and pushright functions. *)
+   using our pushleft and pushright functions. *)
 Definition pushiden {A B C: Type} (g: A -> B) (f: A -> C) (a: A) :
  pushleft g f (g a) = pushright g f (f a) := pp a.
 
@@ -1272,7 +1318,7 @@ intros h1 h2.
 
 assert (IsLowerBound (a /.\ b) G) as t.
  intro w. (* Corollary 2.11.4 *)
- refine (Trunc_rec _). (* Lemma 2.5.37 *)
+ refine (Trunc_rec _). (* Lemma 2.5.36 *)
  refine (sum_ind _ _ _).
  intro p. (* Lemma 3.2.11(i) *)
  pose proof (meet_lower_bound_1 a b) as t1. (* Transitivity *)
@@ -1303,7 +1349,7 @@ refine (antisym_p t1 _).
 
 assert (IsLowerBound a G) as t.
  intro w. (* Corollary 2.11.4 *)
- refine (Trunc_rec _). (* Lemma 2.5.37 *)
+ refine (Trunc_rec _). (* Lemma 2.5.36 *)
  refine (sum_ind _ _ _).
  intro p. (* Reflexivity *)
  pose proof (refle_p a) as r1.
@@ -1732,17 +1778,7 @@ Global Existing Instance winit_obj_is_winitalg.
 (* Coerce a WinSAlg into a type when necessary *)
 Coercion winit_obj : WinSAlg >-> Sortclass.
 
-(* Definition 4.2.8
-
-   Since Coq is automatically managing the universe levels, we do not need to 
-   define that a functor preserves levels, as this will be automatically handled by Coq. *)
-Class PreservesSets (H: Type -> Type) {FH: FunctorStr H} :=
- set_preser_cond : forall A: Type, IsHSet A -> IsHSet (H A).
-
-(* This will inform the automatic solver that "H A" is a set. *)
-Global Existing Instance set_preser_cond.
-
-(* Lemma 4.2.9 *)
+(* Lemma 4.2.7 *)
 Lemma functor_has_llwinsalg {fext: Funext} (H: Type -> Type) {FH: FunctorStr H} : 
  LLWinSAlg H.
 Proof.  (* In the report, we used SAlg' := {X: hSet & H X -> X}. 
@@ -1778,10 +1814,10 @@ transparent assert (HWCone_pr: (IsCone (H W) salg_obj)).
 
            (* Since W is a weak limit for the family, we have a 
               "INW: H W -> W" function and a proof that INW is a function for the
-              limit, i.e. Equation (4.4) in the
+              limit, i.e. Equation (4.3) in the
               report.
               
-              Equation (4.4) is read as follows
+              Equation (4.3) is read as follows
               (just rename bound variables: "i" to "(A, In A)", and "w" to "y"):
               -- "cone_diag W i (INW w)" is playing the role of "f (A,In A) (In_W y)" 
                   in the report. 
@@ -1810,7 +1846,7 @@ set (fB := cone_diag W (BuildSAlg B BAlg)).
 
 refine (BuildAlgMor fB _).
 intro y.
-        (* But this is exactly Equation (4.4)
+        (* But this is exactly Equation (4.3)
            instantiated with SAlg "(B,In_B)" and "y: H W" if we unfold and compute with
            all definitions. *)
 exact (INW_pr (BuildSAlg B BAlg) y)^.
@@ -1818,7 +1854,7 @@ Qed.
 
 (*----- Subsection 4.2.2 --------*)
 
-(* Property part of Definition 4.2.11(i) 
+(* Property part of Definition 4.2.9(i) 
   
    Notice again the use of "let enforce_lt := Type@{l} : Type@{k} in" again, to 
    impose the level restriction. *) 
@@ -1835,7 +1871,7 @@ Arguments llinit_alg_pr _ {_} {_} {_} _ {_}.
 (* Make automatically available the proof that a llInSAlg is a set algebra *)
 Global Existing Instance llinit_is_salg.
 
-(*  Definition 4.2.11(i) *)
+(*  Definition 4.2.9(i) *)
 Record LLInSAlg (H: Type -> Type) {FH: FunctorStr H} := BuildLLInSAlg {
  llinit_obj             : Type ;
  llinit_obj_is_initalg  : IsLLInSAlg llinit_obj H
@@ -1850,7 +1886,7 @@ Global Existing Instance llinit_obj_is_initalg.
 (* Treat a LLInSAlg as a type, when necessary *)
 Coercion llinit_obj : LLInSAlg >-> Sortclass.
 
-(* Property part of Definition 4.2.11(ii) 
+(* Property part of Definition 4.2.9(ii) 
  
    Notice again that the universe levels of W and B must be the same.  *) 
 Class IsInSAlg (W: Type@{k}) (H: Type -> Type) {FH: FunctorStr H} := BuildIsInSAlg { 
@@ -1865,7 +1901,7 @@ Arguments init_alg_pr _ {_} {_} {_} _ {_}.
 (* Make automatically available the proof that an initial algebra is a set algebra *)
 Global Existing Instance init_is_salg.
 
-(* Definition 4.2.11(ii)  *) 
+(* Definition 4.2.9(ii)  *) 
 Record InSAlg (H: Type -> Type) {FH: FunctorStr H} := BuildInSAlg {
  init_obj             : Type ;
  init_obj_is_initalg  : IsInSAlg init_obj H
@@ -1880,7 +1916,7 @@ Global Existing Instance init_obj_is_initalg.
 (* Treat a InSAlg as a type, when necessary *)
 Coercion init_obj : InSAlg >-> Sortclass.
 
-(* Lemma 4.2.13 *)
+(* Lemma 4.2.11 *)
 Lemma lambek_init_alg {H: Type -> Type} {FH: FunctorStr H} {Hsets: PreservesSets H} 
  (A: Type) {IA: IsInSAlg A H} : H A <~> A.
 Proof.   (* H A becomes a SAlg with the "map H (In A) : H (H A) -> H A" function. 
@@ -1900,7 +1936,7 @@ assert ((In A) o u = idmap) as T1.
   refine (ap (In A) _). (* u is morphism *)
   rewrite u_mor.
   reflexivity.
-     (* Lemma 2.9.7 *)
+     (* Lemma 2.9.14 *)
  pose proof (id_alg_mor A) as w2.
         (* We have a unique morphism "gm" going out from A to A *)
  destruct (init_alg_pr A A) as [gm gm_unique].
@@ -1911,7 +1947,7 @@ assert ((In A) o u = idmap) as T1.
           (as in the report), we use the accessor function "alg_mor_fun". *)
  exact (ap alg_mor_fun (p1^ @ p2)).
 
-         (* Lemma 2.6.17 
+         (* Lemma 2.6.18 
             The first equality is "happly T1" *)
 refine (equiv_adjointify (In A) u (happly T1) _).
 intro w.
@@ -1923,28 +1959,28 @@ rewrite id_preser.
 reflexivity.
 Qed.
 
-(* Definition 4.2.14 *)
+(* Definition 4.2.12 *)
 Definition PIn {H: Type -> Type} {FH: FunctorStr H} (A: Type) {AA: IsSAlg A H} 
 (P: A -> Type) {prop: forall x: A, IsHProp (P x)} : H {w: A & P w} -> A :=
  (In A) o (map H pr1).
 
-(* Lemma 4.2.15 
+(* Lemma 4.2.13 
 
    "functor_sigma" is the Sigma_map function of Lemma 2.5.28 *)
 Lemma pin_lemma1 {fext: Funext} {H: Type -> Type} {FH: FunctorStr H} (A B: Type) 
 {AA: IsSAlg A H} {BA: IsSAlg B H} {P: A -> Type} {Q: B -> Type}
 {propP: forall x: A, IsHProp (P x)} {propQ: forall x: B, IsHProp (Q x)}
-(g: A -> B) (fib: forall w: A, P w -> Q (g w)) :
+(g: A -> B) (h: forall w: A, P w -> Q (g w)) :
      IsAlgMor g -> forall y: H {w: A & P w}, 
-                      g (PIn A P y) = PIn B Q (map H (functor_sigma g fib) y).
+                      g (PIn A P y) = PIn B Q (map H (functor_sigma g h) y).
 Proof.
 intro g_mor.
-assert (pr1 o (functor_sigma g fib) == g o pr1) as D1.
+assert (pr1 o (functor_sigma g h) == g o pr1) as D1.
  refine (sig_ind _ _ _ _).
  intros a b. (* By computation *)
  reflexivity.
 
-assert ((map H g) o (map H pr1) == (map H pr1) o (map H (functor_sigma g fib))) as D2.
+assert ((map H g) o (map H pr1) == (map H pr1) o (map H (functor_sigma g h))) as D2.
  intro w.
  rewrite <- comp_preser.
  rewrite <- (path_forall _ _ D1).
@@ -1958,7 +1994,7 @@ refine (ap (In B) _).
 exact (D2 y).
 Qed.
 
-(* Lemma 4.2.16 *)
+(* Lemma 4.2.14 *)
 Lemma pin_lemma2 {fext: Funext} {H: Type -> Type} {FH: FunctorStr H} (A: Type) 
 {AA: IsSAlg A H} : forall y: H {_: A & Unit},
                       idmap (PIn A (fun _: A => Unit) y) = In A (map H pr1 y).
@@ -1967,7 +2003,7 @@ intro y. (* By definition *)
 reflexivity.
 Qed.
 
-(* Definition 4.2.17 
+(* Definition 4.2.15 
    
    Instead of using "A -> Prop" as in the report, we will use "Subtype A" because at
    some point we will use the Powertype lattice, which was defined using "Subtype". *)
@@ -1976,7 +2012,7 @@ Definition CanStep {H: Type -> Type} {FH: FunctorStr H} (A: Type) {AA: IsSAlg A 
                                      (exists y: H {z: A & T z}, w = PIn A T y)
                                   ).
 
-(* Lemma 4.2.18 
+(* Lemma 4.2.16 
 
    Notice how Coq automatically finds a proof that "Subtype A" has a poset
    structure, since we marked the "Powertype" lattice example as a Global Instance. *)
@@ -1990,22 +2026,22 @@ intros y h1. (* Truncation constructor *)
 refine (tr _).
 set (t := map H (functor_sigma idmap p1) y).
 exists t. 
-       (* Lemma 2.9.7 *)
+       (* Lemma 2.9.14 *)
 pose proof (id_alg_mor A) as D1. 
-       (* Lemma 4.2.15 *)
+       (* Lemma 4.2.13 *)
 pose proof (pin_lemma1 A A idmap p1 D1) as D2.
 rewrite h1.
 exact (D2 y).
 Qed.
 
-(* Definition 4.2.19
+(* Definition 4.2.17
 
    In the report, this is written as A_I. In this script it will be written as
    "Init A" *)
 Definition Init {univ: Univalence} {pres: PropResize} {H: Type -> Type} {FH: FunctorStr H} 
 (A: Type) {AA: IsSAlg A H} := {w: A & Lfp (CanStep A) w}.
 
-(* Lemma 4.2.21 *)
+(* Lemma 4.2.18 *)
 Global Instance Init_is_salg {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} (A: Type) {AA: IsSAlg A H} : IsSAlg (Init A) H.
 Proof.  (* Coq automatically proves that (Init A) is a set *)
@@ -2020,16 +2056,16 @@ refine (tr _). (* Corollary 3.4.1 *)
 pose proof (c_induction (CanStep A) p1) as p2.
 set (t := map H (functor_sigma idmap p2) y).
 exists t.
-       (* Lemma 2.9.7 *)
+       (* Lemma 2.9.14 *)
 pose proof (id_alg_mor A) as D1. 
-       (* Lemma 4.2.15 *)
+       (* Lemma 4.2.13 *)
 pose proof (pin_lemma1 A A idmap p2 D1) as D2.
 unfold a.
 rewrite D2. (* By definition of t. *)
 reflexivity.
 Defined.
 
-(* Lemma 4.2.22 *)
+(* Lemma 4.2.19 *)
 Lemma proj1_alg_morph {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} (A: Type) {AA: IsSAlg A H} : IsAlgMor (pr1: (Init A) -> A).
 Proof.
@@ -2037,7 +2073,7 @@ intro w. (* By definition of In (Init A) *)
 reflexivity.
 Qed.
 
-(* Lemma 4.2.23 *)
+(* Lemma 4.2.20 *)
 Lemma Init_ind {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} (A: Type) {AA: IsSAlg A H} (P: Init A -> Type) 
 {Pprop: forall x: Init A, IsHProp (P x)} : 
@@ -2059,15 +2095,15 @@ assert (Lfp (CanStep A) <= B) as k. (* Corollary 3.4.1 *)
  intro w.
  refine (Trunc_rec _).
  refine (sig_ind _ _ _ _). 
- intros y y_pr. (* Lemma 2.6.22 *)
- destruct (sigmas_assoc (Lfp (CanStep A)) P) as [fib equiv].
- change (forall z: Init A, P z -> B z.1) in fib. 
-                (* Lemma 2.9.3 *)
- pose proof (funct_preserve_equiv H (functor_sigma pr1 fib)) as equiv'.
- set (s := map H (functor_sigma pr1 fib)). (* Lemma 4.2.22 *)
- pose proof (proj1_alg_morph A) as D1. (* Lemma 4.2.15 *) 
- pose proof (pin_lemma1 (Init A) A pr1 fib D1) as D2.
-                (* Equation 4.9 *)
+ intros y y_pr. (* Lemma 2.6.23 *)
+ destruct (sigmas_assoc (Lfp (CanStep A)) P) as [j equiv].
+ change (forall z: Init A, P z -> B z.1) in j. 
+                (* Lemma 2.9.10 *)
+ pose proof (funct_preserve_equiv H (functor_sigma pr1 j)) as equiv'.
+ set (s := map H (functor_sigma pr1 j)). (* Lemma 4.2.19 *)
+ pose proof (proj1_alg_morph A) as D1. (* Lemma 4.2.13 *) 
+ pose proof (pin_lemma1 (Init A) A pr1 j D1) as D2.
+                (* Equation 4.11 *)
  
  assert (w = (PIn (Init A) P (s^-1 y)).1) as e1.
   rewrite D2. (* s is an equivalence *)
@@ -2092,10 +2128,10 @@ rewrite eta_sigma in h3.
 exact h3.
 Qed.
 
-(* Theorem 4.2.24(i) *)
+(* Theorem 4.2.21(i) *)
 Theorem Init_is_ll_init_salg {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
 {FH: FunctorStr H} (A: Type) {AA: IsLLWinSAlg A H} : IsLLInSAlg (Init A) H.
-Proof. (* By Lemma 4.2.21 we know "Init A" is a SAlg *)
+Proof. (* By Lemma 4.2.18 we know "Init A" is a SAlg *)
 refine (BuildIsLLInSAlg (Init_is_salg A) _).
 intros restriction B BAlg. 
                 (* Existence *)
@@ -2106,9 +2142,9 @@ pose proof (llwinit_alg_pr A B) as mor_to_B.
                 (* We have to explicitly set the type of the projection function,
                    otherwise Coq will complain when defining function h *)
 set (pr1: Init A -> A) as proj.
-set (h := mor_to_B o proj). (* Lemma 4.2.22 *)
+set (h := mor_to_B o proj). (* Lemma 4.2.19 *)
 pose proof (proj1_alg_morph A) as pr1_mor.
-                    (* Lemma 2.9.6 *)
+                    (* Lemma 2.9.13 *)
 pose proof (alg_mor_compose (BuildAlgMor proj pr1_mor) mor_to_B) as w1.
 change (IsAlgMor h) in w1.
  
@@ -2129,21 +2165,21 @@ induction y as [g w2].
   unfold IsAlgMor.
   exact _.
   simpl. (* Apply function extensionality *) 
-  apply path_arrow. (* Lemma 4.2.23 *)
+  apply path_arrow. (* Lemma 4.2.20 *)
   refine (Init_ind _ _ _).
-         (* Here, term "hyp" is Equation (4.13) *)
+         (* Here, term "hyp" is Equation (4.14) *)
   intros T Tprop hyp.
-  set (fib := fun (w: Init A) (y: T w) => tt).
-  set (ts := (functor_sigma idmap fib) :
+  set (m := fun (w: Init A) (y: T w) => tt).
+  set (ts := (functor_sigma idmap m) :
                {y: Init A & T y} -> {y: Init A & Unit}).
             (* Start Claim 1 *)
   assert ((map H h) o (map H pr1) o (map H ts) ==
          (map H g) o (map H pr1) o (map H ts)) as claim1.
-                  (* This is Diagram (4.15) *)
+                  (* This is Diagram (4.16) *)
     assert (h o pr1 o ts == g o pr1 o ts) as CD1.
       refine (sig_ind _ _ _ _).
       intros a b.
-      simpl. (* By Equation (4.13) *)
+      simpl. (* By Equation (4.14) *)
       exact (hyp (a;b)).
     intro w. (* Functoriality of H *)
     rewrite <- comp_preser.
@@ -2152,17 +2188,17 @@ induction y as [g w2].
     rewrite <- comp_preser.
     rewrite (path_arrow _ _ CD1).
     reflexivity.
-          (* Lemma 2.9.7 *)
+          (* Lemma 2.9.14 *)
   pose proof (id_alg_mor (Init A)) as id_mor.
         (* We have the left square in Diagram 
-              (4.16).
+              (4.17).
            Marked with a big black star.
-           We apply Lemma 4.2.15 *)
-  pose proof (pin_lemma1 (Init A) (Init A) idmap fib id_mor) as BStar.
+           We apply Lemma 4.2.13 *)
+  pose proof (pin_lemma1 (Init A) (Init A) idmap m id_mor) as BStar.
         (* We have the middle square in Diagram 
-              (4.16).
+              (4.17).
            Marked with a big black diamond.
-           We apply Lemma 4.2.16 *)
+           We apply Lemma 4.2.14 *)
   pose proof (pin_lemma2 (Init A)) as BDiamond.
         (* The dashed arrows diagram is represeted by term w1.
            The squiggly arrows diagram is rerpresented by term w2. *) 
@@ -2178,7 +2214,7 @@ induction y as [g w2].
 exact (ap (algmor_as_sigma (Init A) B) morph_eq).
 Defined.
 
-(* Theorem 4.2.24(ii) 
+(* Theorem 4.2.21(ii) 
 
    The proof is identical as in the previous theorem, we omit the comments this time. *)
 Theorem Init_is_init_salg {univ: Univalence} {pres: PropResize} {H: Type -> Type} 
@@ -2206,8 +2242,8 @@ induction y as [g w2].
   apply path_arrow.
   refine (Init_ind _ _ _).
   intros T Tprop hyp.
-  set (fib := fun (w: Init A) (y: T w) => tt).
-  set (ts := (functor_sigma idmap fib) :
+  set (m := fun (w: Init A) (y: T w) => tt).
+  set (ts := (functor_sigma idmap m) :
                {y: Init A & T y} -> {y: Init A & Unit}).
             (* Start Claim 1 *)
   assert ((map H h) o (map H pr1) o (map H ts) ==
@@ -2225,7 +2261,7 @@ induction y as [g w2].
     rewrite (path_arrow _ _ CD1).
     reflexivity.
   pose proof (id_alg_mor (Init A)) as id_mor.
-  pose proof (pin_lemma1 (Init A) (Init A) idmap fib id_mor) as BStar.
+  pose proof (pin_lemma1 (Init A) (Init A) idmap m id_mor) as BStar.
   pose proof (pin_lemma2 (Init A)) as BDiamond. 
   intro w.
   rewrite BStar.
@@ -2238,24 +2274,24 @@ induction y as [g w2].
 exact (ap (algmor_as_sigma (Init A) B) morph_eq).
 Defined.
 
-(* Corollary 4.2.25 *)
+(* Corollary 4.2.22 *)
 Corollary functor_has_llinit_salg {univ: Univalence} {pres: PropResize} (H: Type -> Type) 
 {FH: FunctorStr H} : LLInSAlg H.
-Proof. (* It has a LLWinSAlg by Lemma 4.2.9 *)
+Proof. (* It has a LLWinSAlg by Lemma 4.2.7 *)
 destruct (functor_has_llwinsalg H) as [W llwinsalg_pr].
-       (* By Theorem 4.2.24(i), 
+       (* By Theorem 4.2.21(i), 
           "Init W" is a LLInSAlg *)
 exact (BuildLLInSAlg (Init W) (Init_is_ll_init_salg W)).
 Defined.
 
 (*----- Subsection 4.2.3 --------*)
 
-(* Definition 4.2.26 
+(* Definition 4.2.23 
 
    We use "Subtype Y" instead of "Y -> hProp", which are equivalent. *)
 Definition Pow (Y: Type) := Subtype Y.
 
-(* Lemma 4.2.27 *)
+(* Lemma 4.2.24 *)
 Global Instance Pow_is_functor {univ: Univalence} {pres: PropResize} : FunctorStr Pow. 
 Proof.
 set (mapPow A B f := fun P: Subtype A => 
@@ -2339,9 +2375,9 @@ refine (equiv_propresize _ _).
 exact (tr (t ; (s , (ap h u) @ r))).
 Defined.
 
-(* That Pow preserves sets is part of Lemma 4.2.27
+(* That Pow preserves sets is part of Lemma 4.2.24
 
-   Also, that Pow preserves levels will be automatically managed by Coq. *)
+   Also, that Pow is an endofunctor will be automatically managed by Coq. *)
 Global Instance Pow_preservesSets {univ: Univalence} {pres: PropResize} : 
  PreservesSets Pow.
 Proof.
@@ -2349,25 +2385,25 @@ intros X Xset. (* Coq automatically proves that "Subtype X" is a set. *)
 exact _.
 Qed.
 
-(* Theorem 4.2.28 *)
+(* Theorem 4.2.25 *)
 Theorem pow_without_init_salg {univ: Univalence} {pres: PropResize} : ~(InSAlg Pow).
 Proof.
-intro A. (* Lemma 4.2.13 *)
+intro A. (* Lemma 4.2.11 *)
 pose proof (lambek_init_alg A) as fixp.
          (* Lemma 2.8.20 *)
 exact (cantor A fixp).
 Qed.
 
-(* Corollary 4.2.29 *)
+(* Corollary 4.2.26 *)
 Corollary pow_without_winit_salg {univ: Univalence} {pres: PropResize} : ~(WinSAlg Pow).
 Proof.
-intro A. (* Theorem 4.2.24(ii) *)
+intro A. (* Theorem 4.2.21(ii) *)
 pose proof (Init_is_init_salg A) as Ainit.
-         (*  Theorem 4.2.28 *)
+         (*  Theorem 4.2.25 *)
 exact (pow_without_init_salg (BuildInSAlg (Init A) Ainit)).
 Qed.
 
-(* Corollary 4.2.30 *)
+(* Corollary 4.2.27 *)
 Corollary llinit_salg_not_fixpoint {univ: Univalence} {pres: PropResize} (A: Type) 
 {Allinit: IsLLInSAlg A Pow} : ~(Pow A <~> A).
 Proof. (* Lemma 2.8.20 *)
@@ -2382,10 +2418,10 @@ Section Example_nat.
 Context {univ: Univalence}
         {propres: PropResize}.
 
-(* Definition 4.2.31 *)
+(* Definition 4.2.28 *)
 Definition NatF (Y: Type) := Unit + Y.
 
-(* Lemma 4.2.32 *)
+(* Lemma 4.2.29 *)
 Local Instance NatF_is_functor : FunctorStr NatF.
 Proof.
 transparent assert (mapNatF: (forall A B: Type, (A -> B) -> NatF A -> NatF B)).
@@ -2412,9 +2448,9 @@ reflexivity.
 Defined.
 
 (* This is the set preservation part of 
-   Lemma 4.2.32
+   Lemma 4.2.29
 
-   We do not need to prove that NatF preserves levels, as it is handled 
+   We do not need to prove that NatF is an endofunctor, as it is handled 
    automatically by Coq. *)
 Local Instance NatF_preserves_sets : PreservesSets NatF.
 Proof.
@@ -2422,9 +2458,9 @@ intros X setX. (* Coq automatically proves it *)
 exact _.
 Defined.
 
-(* Definition 4.2.33
+(* Definition 4.2.30
 
-   We obtain it from Corollary 4.2.25 *)
+   We obtain it from Corollary 4.2.22 *)
 Definition Nat := functor_has_llinit_salg NatF.
 
 (* We extract the In function from Nat because Coq behaves a bit dumb 
@@ -2432,13 +2468,13 @@ Definition Nat := functor_has_llinit_salg NatF.
    expressions. So, we have to help Coq a bit. *)
 Definition In_Nat := In Nat.
 
-(* Definition 4.2.34 *)
+(* Definition 4.2.31 *)
 Definition zero_Nat : Nat := In_Nat (inl tt).
 
-(* Definition 4.2.34 *)
+(* Definition 4.2.31 *)
 Definition succ_Nat (n: Nat) : Nat := In_Nat (inr n).
 
-(* Theorem 4.2.35 *)
+(* Theorem 4.2.32 *)
 Theorem Nat_ind (P: Nat -> Type) {HP: forall x: Nat, IsHProp (P x)} :
  P zero_Nat -> (forall n: Nat, P n -> P (succ_Nat n)) -> 
    forall n: Nat, P n.
@@ -2457,7 +2493,7 @@ change (P (succ_Nat r.1)).
 exact (Ind r.1 (HInd r)).
 Qed.
 
-(* Theorem 4.2.36 *)
+(* Theorem 4.2.33 *)
 Theorem Nat_iter {D: Type} {SD: IsHSet D} (base: D) (step: D -> D) : 
  Contr (exists f: Nat -> D, (f zero_Nat = base) * 
                             (forall n: Nat, f (succ_Nat n) = step (f n))
@@ -2470,7 +2506,7 @@ set (InD := fun z: Unit + D => match z with
 set (DSAlg := (BuildIsSAlg InD _): IsSAlg D NatF).
 destruct (llinit_alg_pr Nat D) as [u h_unique].
 destruct u as [h h_mor]. (* So, h: Nat -> D is a unique morphism.
-        Here, "h_mor" is Diagram (4.18) 
+        Here, "h_mor" is Diagram (4.19) 
         And "h_unique" is the proof that h is unique. *)
 
                 (* Existence *)
@@ -2496,7 +2532,7 @@ assert (IsAlgMor g) as q2. (* By induction on sum types *)
  exact (ap alg_mor_fun (h_unique (BuildAlgMor g q2))).
 Qed.
 
-(* Theorem 4.2.37 
+(* Theorem 4.2.34 
    
    Here, nat are the naturals as defined in the HoTT library. *)
 Theorem Nat_equiv_to_nat : Nat <~> nat.
@@ -2515,7 +2551,7 @@ intros n prev.
 exact (succ_Nat prev).
 
          (* Now, we proceed to prove the equivalence. 
-            We use Lemma 2.6.17 *)
+            We use Lemma 2.6.18 *)
 refine (equiv_adjointify f g _ _).
 
          (* By induction on "nat" *)
@@ -2687,10 +2723,10 @@ transparent assert (HWCocone_pr: (IsCocone (H W) coalg_obj)).
 
            (* Since W is a weak colimit for the family, we have a 
               "OUTW: W -> H W" function and a proof that OUTW is a function for the
-              colimit, i.e. Equation (4.19) in the
+              colimit, i.e. Equation (4.20) in the
               report.
               
-              Equation (4.19) is read as follows
+              Equation (4.20) is read as follows
               (just rename bound variables: "i" to "(A, In A)", and "w" to "y"):
               -- "OUTW (cocone_diag W i w)" is playing the role of "Out_W (f (A,Out A) y)" 
                   in the report. 
@@ -2719,7 +2755,7 @@ set (fB := cocone_diag W (BuildCoAlg B BCoAlg)).
 
 refine (BuildCoAlgMor fB _).
 intro y.
-        (* But this is exactly Equation (4.19)
+        (* But this is exactly Equation (4.20)
            instantiated with CoAlg "(B,Out_B)" and "y: B" if we unfold and compute with
            all definitions. *)
 exact (OUTW_pr (BuildCoAlg B BCoAlg) y).
@@ -2807,7 +2843,7 @@ assert (u o (Out A) = idmap) as T1.
   rewrite <- u_mor.
   refine (ap (map H u) _). (* By computation *)
   reflexivity.
-     (* Lemma 2.10.4 *)
+     (* Lemma 2.10.7 *)
  pose proof (id_coalg_mor A) as w2.
         (* We have a unique morphism "gm" going out from A to A *)
  destruct (fin_coalg_pr A A) as [gm gm_unique].
@@ -2818,7 +2854,7 @@ assert (u o (Out A) = idmap) as T1.
           we use the accessor function "coalg_mor_fun". *)
  exact (ap coalg_mor_fun (p1^ @ p2)).
 
-         (* Lemma 2.6.17 
+         (* Lemma 2.6.18 
             The first equality is "happly T1" *)
 refine (equiv_adjointify u (Out A) (happly T1) _).
 intro w.
@@ -3039,7 +3075,7 @@ destruct t1 as [Qcalg t2].
 destruct t2 as [pl t3].
 destruct t3 as [pr t4].
 destruct t4 as [t5 D1]. 
-                (* Term "D1" represents Diagram (4.22) *)
+                (* Term "D1" represents Diagram (4.23) *)
 destruct t5 as [t7 prsur].
 destruct t7 as [t8 plsur].
 destruct t8 as [plmor prmor].
@@ -3055,7 +3091,7 @@ split.
 exact plmor.
 exact prmor.
 exact plsur.
-exact prsur. (* By diagram (4.22) 
+exact prsur. (* By diagram (4.23) 
              and computation *)
 exact (D1 (inl ((w,y) ; h1))).
 Qed.
@@ -3085,7 +3121,7 @@ destruct (coalg_coequalizer h g hmor gmor) as [Q t1].
 destruct t1 as [Qcalg t2].
 destruct t2 as [p t3].
 destruct t3 as [t4 D1]. 
-             (* Term "D1" is Diagram (4.23) *)
+             (* Term "D1" is Diagram (4.24) *)
 destruct t4 as [pmor psur].
 
 exists Q.
@@ -3094,14 +3130,14 @@ set (q := p o h).
 exists q.
 split.
 split.
-           (* Lemma 2.10.3 *)
+           (* Lemma 2.10.6 *)
 exact (coalg_mor_compose (BuildCoAlgMor h hmor) (BuildCoAlgMor p pmor)).
 
            (* Lemma 2.11.11 *)
 exact (surjections_compose hsur psur).
 
 unfold q.
-rewrite h1. (* By Diagram (4.23) *)
+rewrite h1. (* By Diagram (4.24) *)
 exact (D1 y)^.
 Qed.
 
@@ -3146,7 +3182,7 @@ assert (forall w: B, IsHProp (P w)) as t1.
   intro c2.
   refine (prod_ind _ _).
   intros E3 E4. (* Here, E1, E2, E3, and E4 are equations
-                   (4.25) *)
+                   (4.26) *)
   rewrite <- E1.
   rewrite <- E3. (* By higher constructor for quotients. *)
   refine (related_classes_eq BehEquiv _).
@@ -3189,7 +3225,7 @@ refine (sig_ind _ _ _ _).
 intro c.
 refine (prod_ind _ _).
 intros E1 E2. (* Here, E1 and E2 are equations 
-                 (4.26) *)
+                 (4.27) *)
 
 assert (BehEquiv c z) as t4.
               (* Lemma 2.8.23 *)
@@ -3308,12 +3344,12 @@ split.
 split.
 split.
 
-      (* Lemma 2.10.3 *)
+      (* Lemma 2.10.6 *)
 exact (coalg_mor_compose (BuildCoAlgMor (class_of BehEquiv) clmor) 
                          (BuildCoAlgMor h hmor)
       ).
 
-      (* Lemma 2.10.3 *)
+      (* Lemma 2.10.6 *)
 exact (coalg_mor_compose (BuildCoAlgMor (class_of BehEquiv) clmor) 
                          (BuildCoAlgMor g gmor)
       ).
@@ -3354,7 +3390,7 @@ intros restriction B BCoAlg.
 pose proof (llwfin_coalg_pr A B) as mor_from_B.
 set (h := (class_of BehEquiv) o mor_from_B). (* Lemma 4.3.27 *)
 pose proof (class_of_coalg_morph A) as cl_mor.
-                    (* Lemma 2.10.3 *)
+                    (* Lemma 2.10.6 *)
 pose proof (coalg_mor_compose mor_from_B (BuildCoAlgMor (class_of BehEquiv) cl_mor)) as w1.
 change (IsCoAlgMor h) in w1.
 
@@ -3390,7 +3426,7 @@ induction y as [g w2].
   refine (sig_ind _ _ _ _).
   intro c.
   refine (prod_ind _ _).
-  intros p1 p2. (* Here, p1 and p2 represent Equations (4.30) 
+  intros p1 p2. (* Here, p1 and p2 represent Equations (4.31) 
                    in the report *)
   set (k r := ( (h r, g r) ; (r ; (idpath, idpath))) : {z: (Fin A) * (Fin A) & R z}).
   set (t := map H k (Out B c)).
@@ -3399,15 +3435,15 @@ induction y as [g w2].
 
   unfold t. (* Functoriality of H *)
   rewrite <- comp_preser. (* By definition of k and computation *)
-  change (Out (Fin A) m = map H h (Out B c)). (* By Diagram (4.28) *)
-  rewrite w1. (* By Equations (4.30) *)
+  change (Out (Fin A) m = map H h (Out B c)). (* By Diagram (4.29) *)
+  rewrite w1. (* By Equations (4.31) *)
   rewrite <- p1. (* By Definition of "Fin A" *)
   reflexivity.
 
   unfold t. (* Functoriality of H *)
   rewrite <- comp_preser. (* By definition of k and computation *)
-  change (Out (Fin A) n = map H g (Out B c)). (* By Diagram (4.29) *)
-  rewrite w2. (* By Equations (4.30) *)
+  change (Out (Fin A) n = map H g (Out B c)). (* By Diagram (4.30) *)
+  rewrite w2. (* By Equations (4.31) *)
   rewrite <- p2.
   reflexivity.
 
@@ -3553,7 +3589,7 @@ Defined.
 (* This is the set preservation part of 
    Lemma 4.3.36
 
-   We do not need to prove that StreamF preserves levels, as it is handled 
+   We do not need to prove that StreamF is an endofunctor, as it is handled 
    automatically by Coq. *)
 Local Instance StreamF_preserves_sets (A: Type) {setA: IsHSet A} : 
  PreservesSets (StreamF A).
@@ -3566,7 +3602,6 @@ Defined.
 
    We obtain it from Corollary 4.3.31 *)
 Definition Stream (A: Type) {setA: IsHSet A} := functor_has_llfin_coalg (StreamF A).
-
 
 (* We extract the Out function from Stream A because Coq behaves a bit dumb 
    if we attempt to use the expression "Out (Stream A)" inside more complex 
@@ -3636,7 +3671,7 @@ Proof.
 set (DCoAlg := (fun d: D => (h d, t d)): IsCoAlg D (StreamF A)).
 destruct (llfin_coalg_pr (Stream A) D) as [mor u_unique].
 destruct mor as [u u_mor]. (* So, u: D -> Stream A is a unique morphism.
-        Here, "u_mor" is Diagram (4.32) 
+        Here, "u_mor" is Diagram (4.33) 
         And "u_unique" is the proof that u is unique. *)
                 
              (* Existence *)
@@ -3657,20 +3692,20 @@ refine (BuildContr _ (u ; w1) _).
              (* Uniqueness *)
 refine (sig_ind _ _ _ _).
 intros g w2. (* Here, "w2" is acting as Equations 
-                (4.33) *)
+                (4.34) *)
              (* Lemma 2.8.14 *)
 refine (path_sigma_hprop _ _ _).
 simpl.
 assert (IsCoAlgMor g) as q2. 
-  intro w. (* Corollary 2.6.25 *)
+  intro w. (* Corollary 2.6.26 *)
   apply path_prod. (* Simplify by computation *)
   change (h w = head_Stream (g w)).
-             (* By Equations (4.33) *)
+             (* By Equations (4.34) *)
   exact (fst (w2 w))^.
 
              (* Simplify by computation *)
   change (g (t w) = tail_Stream (g w)).
-             (* By Equations (4.33) *)
+             (* By Equations (4.34) *)
   exact (snd (w2 w))^.
          
         (* So, by uniqueness of u, we must have u = g *)
@@ -3699,7 +3734,7 @@ destruct (@center _ (Stream_coiter (fun g: nat -> A => g 0)
          ) as [f2 f2pr].
 
          (* Now, we proceed to prove the equivalence. 
-            We use Lemma 2.6.17 *)
+            We use Lemma 2.6.18 *)
 refine (equiv_adjointify f1 f2 _ _).
 
 intro g. (* By function extensionality *)
@@ -3729,7 +3764,7 @@ refine (sig_ind _ _ _ _).
 intro w.
 refine (prod_ind _ _).
 intros q1 q2. (* Here, "q1" and "q2" are Equations 
-                 (4.37) *)
+                 (4.38) *)
 split.
 
 rewrite q1. (* By definition of f2 *)
