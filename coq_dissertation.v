@@ -1814,10 +1814,10 @@ transparent assert (HWCone_pr: (IsCone (H W) salg_obj)).
 
            (* Since W is a weak limit for the family, we have a 
               "INW: H W -> W" function and a proof that INW is a function for the
-              limit, i.e. Equation (3.3) in the
+              limit, i.e. Equation (3.4) in the
               report.
               
-              Equation (3.3) is read as follows
+              Equation (3.4) is read as follows
               (just rename bound variables: "i" to "(A, In A)", and "w" to "y"):
               -- "cone_diag W i (INW w)" is playing the role of "f (A,In A) (In_W y)" 
                   in the report. 
@@ -1846,7 +1846,7 @@ set (fB := cone_diag W (BuildSAlg B BAlg)).
 
 refine (BuildAlgMor fB _).
 intro y.
-        (* But this is exactly Equation (3.3)
+        (* But this is exactly Equation (3.4)
            instantiated with SAlg "(B,In_B)" and "y: H W" if we unfold and compute with
            all definitions. *)
 exact (INW_pr (BuildSAlg B BAlg) y)^.
@@ -2103,7 +2103,7 @@ assert (Lfp (CanStep A) <= B) as k. (* Corollary 2.4.1 *)
  set (s := map H (functor_sigma pr1 j)). (* Lemma 3.2.19 *)
  pose proof (proj1_alg_morph A) as D1. (* Lemma 3.2.13 *) 
  pose proof (pin_lemma1 (Init A) A pr1 j D1) as D2.
-                (* Equation 3.11 *)
+                (* Equation 3.12 *)
  
  assert (w = (PIn (Init A) P (s^-1 y)).1) as e1.
   rewrite D2. (* s is an equivalence *)
@@ -2167,7 +2167,7 @@ induction y as [g w2].
   simpl. (* Apply function extensionality *) 
   apply path_arrow. (* Lemma 3.2.20 *)
   refine (Init_ind _ _ _).
-         (* Here, term "hyp" is Equation (3.14) *)
+         (* Here, term "hyp" is Equation (3.15) *)
   intros T Tprop hyp.
   set (m := fun (w: Init A) (y: T w) => tt).
   set (ts := (functor_sigma idmap m) :
@@ -2175,11 +2175,11 @@ induction y as [g w2].
             (* Start Claim 1 *)
   assert ((map H h) o (map H pr1) o (map H ts) ==
          (map H g) o (map H pr1) o (map H ts)) as claim1.
-                  (* This is Diagram (3.16) *)
+                  (* This is Diagram (3.17) *)
     assert (h o pr1 o ts == g o pr1 o ts) as CD1.
       refine (sig_ind _ _ _ _).
       intros a b.
-      simpl. (* By Equation (3.14) *)
+      simpl. (* By Equation (3.15) *)
       exact (hyp (a;b)).
     intro w. (* Functoriality of H *)
     rewrite <- comp_preser.
@@ -2191,12 +2191,12 @@ induction y as [g w2].
           (* Lemma 1.9.14 *)
   pose proof (id_alg_mor (Init A)) as id_mor.
         (* We have the left square in Diagram 
-              (3.17).
+              (3.18).
            Marked with a big black star.
            We apply Lemma 3.2.13 *)
   pose proof (pin_lemma1 (Init A) (Init A) idmap m id_mor) as BStar.
         (* We have the middle square in Diagram 
-              (3.17).
+              (3.18).
            Marked with a big black diamond.
            We apply Lemma 3.2.14 *)
   pose proof (pin_lemma2 (Init A)) as BDiamond.
@@ -2506,7 +2506,7 @@ set (InD := fun z: Unit + D => match z with
 set (DSAlg := (BuildIsSAlg InD _): IsSAlg D NatF).
 destruct (llinit_alg_pr Nat D) as [u h_unique].
 destruct u as [h h_mor]. (* So, h: Nat -> D is a unique morphism.
-        Here, "h_mor" is Diagram (3.19) 
+        Here, "h_mor" is Diagram (3.20) 
         And "h_unique" is the proof that h is unique. *)
 
                 (* Existence *)
@@ -2723,10 +2723,10 @@ transparent assert (HWCocone_pr: (IsCocone (H W) coalg_obj)).
 
            (* Since W is a weak colimit for the family, we have a 
               "OUTW: W -> H W" function and a proof that OUTW is a function for the
-              colimit, i.e. Equation (3.20) in the
+              colimit, i.e. Equation (3.22) in the
               report.
               
-              Equation (3.20) is read as follows
+              Equation (3.22) is read as follows
               (just rename bound variables: "i" to "(A, In A)", and "w" to "y"):
               -- "OUTW (cocone_diag W i w)" is playing the role of "Out_W (f (A,Out A) y)" 
                   in the report. 
@@ -2755,7 +2755,7 @@ set (fB := cocone_diag W (BuildCoAlg B BCoAlg)).
 
 refine (BuildCoAlgMor fB _).
 intro y.
-        (* But this is exactly Equation (3.20)
+        (* But this is exactly Equation (3.22)
            instantiated with CoAlg "(B,Out_B)" and "y: B" if we unfold and compute with
            all definitions. *)
 exact (OUTW_pr (BuildCoAlg B BCoAlg) y).
@@ -3075,7 +3075,7 @@ destruct t1 as [Qcalg t2].
 destruct t2 as [pl t3].
 destruct t3 as [pr t4].
 destruct t4 as [t5 D1]. 
-                (* Term "D1" represents Diagram (3.23) *)
+                (* Term "D1" represents Diagram (3.25) *)
 destruct t5 as [t7 prsur].
 destruct t7 as [t8 plsur].
 destruct t8 as [plmor prmor].
@@ -3091,7 +3091,7 @@ split.
 exact plmor.
 exact prmor.
 exact plsur.
-exact prsur. (* By diagram (3.23) 
+exact prsur. (* By diagram (3.25) 
              and computation *)
 exact (D1 (inl ((w,y) ; h1))).
 Qed.
@@ -3121,7 +3121,7 @@ destruct (coalg_coequalizer h g hmor gmor) as [Q t1].
 destruct t1 as [Qcalg t2].
 destruct t2 as [p t3].
 destruct t3 as [t4 D1]. 
-             (* Term "D1" is Diagram (3.24) *)
+             (* Term "D1" is Diagram (3.26) *)
 destruct t4 as [pmor psur].
 
 exists Q.
@@ -3137,7 +3137,7 @@ exact (coalg_mor_compose (BuildCoAlgMor h hmor) (BuildCoAlgMor p pmor)).
 exact (surjections_compose hsur psur).
 
 unfold q.
-rewrite h1. (* By Diagram (3.24) *)
+rewrite h1. (* By Diagram (3.26) *)
 exact (D1 y)^.
 Qed.
 
@@ -3182,7 +3182,7 @@ assert (forall w: B, IsHProp (P w)) as t1.
   intro c2.
   refine (prod_ind _ _).
   intros E3 E4. (* Here, E1, E2, E3, and E4 are equations
-                   (3.26) *)
+                   (3.28) *)
   rewrite <- E1.
   rewrite <- E3. (* By higher constructor for quotients. *)
   refine (related_classes_eq BehEquiv _).
@@ -3225,7 +3225,7 @@ refine (sig_ind _ _ _ _).
 intro c.
 refine (prod_ind _ _).
 intros E1 E2. (* Here, E1 and E2 are equations 
-                 (3.27) *)
+                 (3.29) *)
 
 assert (BehEquiv c z) as t4.
               (* Lemma 1.8.23 *)
@@ -3426,7 +3426,7 @@ induction y as [g w2].
   refine (sig_ind _ _ _ _).
   intro c.
   refine (prod_ind _ _).
-  intros p1 p2. (* Here, p1 and p2 represent Equations (3.31) 
+  intros p1 p2. (* Here, p1 and p2 represent Equations (3.33) 
                    in the report *)
   set (k r := ( (h r, g r) ; (r ; (idpath, idpath))) : {z: (Fin A) * (Fin A) & R z}).
   set (t := map H k (Out B c)).
@@ -3435,15 +3435,15 @@ induction y as [g w2].
 
   unfold t. (* Functoriality of H *)
   rewrite <- comp_preser. (* By definition of k and computation *)
-  change (Out (Fin A) m = map H h (Out B c)). (* By Diagram (3.29) *)
-  rewrite w1. (* By Equations (3.31) *)
+  change (Out (Fin A) m = map H h (Out B c)). (* By Diagram (3.31) *)
+  rewrite w1. (* By Equations (3.33) *)
   rewrite <- p1. (* By Definition of "Fin A" *)
   reflexivity.
 
   unfold t. (* Functoriality of H *)
   rewrite <- comp_preser. (* By definition of k and computation *)
-  change (Out (Fin A) n = map H g (Out B c)). (* By Diagram (3.30) *)
-  rewrite w2. (* By Equations (3.31) *)
+  change (Out (Fin A) n = map H g (Out B c)). (* By Diagram (3.32) *)
+  rewrite w2. (* By Equations (3.33) *)
   rewrite <- p2.
   reflexivity.
 
@@ -3671,7 +3671,7 @@ Proof.
 set (DCoAlg := (fun d: D => (h d, t d)): IsCoAlg D (StreamF A)).
 destruct (llfin_coalg_pr (Stream A) D) as [mor u_unique].
 destruct mor as [u u_mor]. (* So, u: D -> Stream A is a unique morphism.
-        Here, "u_mor" is Diagram (3.33) 
+        Here, "u_mor" is Diagram (3.35) 
         And "u_unique" is the proof that u is unique. *)
                 
              (* Existence *)
@@ -3692,7 +3692,7 @@ refine (BuildContr _ (u ; w1) _).
              (* Uniqueness *)
 refine (sig_ind _ _ _ _).
 intros g w2. (* Here, "w2" is acting as Equations 
-                (3.34) *)
+                (3.36) *)
              (* Lemma 1.8.14 *)
 refine (path_sigma_hprop _ _ _).
 simpl.
@@ -3700,12 +3700,12 @@ assert (IsCoAlgMor g) as q2.
   intro w. (* Corollary 1.6.26 *)
   apply path_prod. (* Simplify by computation *)
   change (h w = head_Stream (g w)).
-             (* By Equations (3.34) *)
+             (* By Equations (3.36) *)
   exact (fst (w2 w))^.
 
              (* Simplify by computation *)
   change (g (t w) = tail_Stream (g w)).
-             (* By Equations (3.34) *)
+             (* By Equations (3.36) *)
   exact (snd (w2 w))^.
          
         (* So, by uniqueness of u, we must have u = g *)
@@ -3764,7 +3764,7 @@ refine (sig_ind _ _ _ _).
 intro w.
 refine (prod_ind _ _).
 intros q1 q2. (* Here, "q1" and "q2" are Equations 
-                 (3.38) *)
+                 (3.40) *)
 split.
 
 rewrite q1. (* By definition of f2 *)
