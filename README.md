@@ -1,5 +1,5 @@
 # hott-knaster-tarski-experiment-dissertation
-Companion Coq script for the masters report titled "Inductive and Coinductive Types in Homotopy Type Theory. An Experiment on the Knaster-Tarski Construction". The report can be accessed [here](http://132.248.9.195/ptd2017/enero/514008976/514008976_A1.pdf).
+Companion Coq script for the masters report titled "Inductive and Coinductive Types in Homotopy Type Theory. An Experiment on the Knaster-Tarski Construction". The report can be accessed [here](http://oreon.dgbiblio.unam.mx/F/PAM68N8H5XAEFSP32LG2MGT375YQNNQ5V6CSMRQQT5G6JSAYQT-23899?func=full-set-set&set_number=005491&set_entry=000001&format=999).
 
 To run the script you need the HoTT library and a specially compiled version of Coq for the library. The script runs with the HoTT library of June 2016, but it will probably run with newer versions of the library.
 
